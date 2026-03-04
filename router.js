@@ -139,7 +139,7 @@
      CONFIG
      ══════════════════════════════════════════════════════════════════ */
   var WILDCARD_FILE = "404.html"; 
-  var SPA_MODE      = true;  // [FIX 1] Enabled by default to keep URLs clean and fetch via JS
+  var SPA_MODE      = true;  
 
   // Internal state
   var _currentParams = {};
@@ -185,13 +185,6 @@
 
   function _safeReplace(url) {
     try { window.location.replace(url); } catch (e) { window.location.href = url; }
-  }
-
-  function _isExternal(href) {
-    if (!href) return true;
-    if (/^(https?:)?\/\//i.test(href)) return true;
-    if (/^(mailto:|tel:|sms:|javascript:|data:)/i.test(href)) return true;
-    return false;
   }
 
   function _isAsset(href) {
@@ -269,7 +262,6 @@
      SECTION 3 — NAVIGATION CORE
      ══════════════════════════════════════════════════════════════════ */
 
-  // [FIX 2] Signature altered: Now accepts `slug` (for the address bar) AND `filePath` (for fetching)
   function _navigateTo(slug, filePath, search, hash, replaceState) {
     var base = _getBasePath();
     var displayUrl = _origin() + _joinURL(base, slug) + (search || "") + (hash || "");
@@ -321,7 +313,14 @@
         var newEl  = doc.querySelector("main") || doc.body;
         var curEl  = document.querySelector("main") || document.body;
         if (doc.title) document.title = doc.title;
-        if (newEl && curEl) { curEl.innerHTML = newEl.innerHTML; _bindLinks(); }
+        if (newEl && curEl) { 
+          curEl.innerHTML = newEl.innerHTML; 
+          
+          // Re-execute scripts so the new page actually functions
+          _execScripts(curEl, pageUrl, 0); 
+          
+          _bindLinks(); 
+        }
         if (typeof done === "function") done();
       })
       .catch(function () { window.location.href = pageUrl; });
@@ -461,15 +460,20 @@
           var a = e.target && e.target.closest ? e.target.closest("a[href]") : null;
           if (!a) return;
           var href = a.getAttribute("href") || "";
-          if (!href || href.charAt(0) === "#" || _isExternal(href) || _isAsset(href)) return;
+          
+          // Using native URL parser to verify safety inside overlay
           try {
-            var aUrl   = new URL(href, resolvedUrl);
-            if (aUrl.origin !== _origin()) return;
+            var urlObj = new URL(href, resolvedUrl);
+            if (urlObj.origin !== window.location.origin) return; // External link handled by browser
+            if (/^(mailto:|tel:|sms:|javascript:|data:)/i.test(urlObj.protocol)) return;
+            if (_isAsset(urlObj.pathname)) return;
+            if (urlObj.pathname === window.location.pathname && urlObj.hash && !urlObj.search) return;
+            
             e.preventDefault();
             e.stopPropagation();
-            var aPath  = aUrl.pathname.replace(/^\/+/, "").replace(/\/+$/, "");
+            var aPath  = urlObj.pathname.replace(/^\/+/, "").replace(/\/+$/, "");
             var aMatch = _resolveRoute(aPath) || _resolveRoute(_normalizeSlug(aPath));
-            var next   = aMatch ? _origin() + _joinURL(_getBasePath(), aMatch.file) + aUrl.search + aUrl.hash : aUrl.href;
+            var next   = aMatch ? _origin() + _joinURL(_getBasePath(), aMatch.file) + urlObj.search + urlObj.hash : urlObj.href;
             _openOverlay(next, { title: "" });
           } catch (e2) {}
         }, true);
@@ -612,7 +616,6 @@
      SECTION 7 — LINK BINDING
      ══════════════════════════════════════════════════════════════════ */
 
-  // [FIX 3] Targets all standard href links globally
   var NAV_SELECTOR = "a[href]";
 
   function _bindLinks() {
@@ -627,7 +630,7 @@
       var backEl = e.target && e.target.closest ? e.target.closest("[data-back]") : null;
       if (backEl) {
         var bh = backEl.getAttribute("href") || "";
-        if (bh && _isExternal(bh)) return;
+        if (bh && (/^(https?:)?\/\//i.test(bh)) && bh.indexOf(window.location.host) === -1) return;
         e.preventDefault();
         if (window.history.length > 1) window.history.back();
         else _safeReplace(_origin() + _joinURL(_getBasePath(), "index.html"));
@@ -646,26 +649,35 @@
       }
 
       var hrefAttr = a.getAttribute("href") || "";
-      if (!hrefAttr || _isExternal(hrefAttr) || hrefAttr.charAt(0) === "#" || _isAsset(hrefAttr)) return;
+      if (!hrefAttr) return;
 
       var url = _hrefToURL(hrefAttr);
-      if (!url || url.origin !== window.location.origin) return;
+      if (!url) return;
+
+      if (url.origin !== window.location.origin) return;
+      if (/^(mailto:|tel:|sms:|javascript:|data:)/i.test(url.protocol)) return;
+      if (_isAsset(url.pathname)) return;
+      if (url.pathname === window.location.pathname && url.hash && !url.search) return;
+
+      e.preventDefault();
 
       var base  = _getBasePath();
       var path  = _stripBasePath(url.pathname || "/", base);
       var clean = String(path || "/").replace(/^\/+/, "");
 
       if (/\.html?$/i.test(clean)) {
-        e.preventDefault();
         _navigateTo(clean, clean, url.search || "", url.hash || "", false);
         return;
       }
 
       var slug  = _normalizeSlug(clean);
-      if (!slug) return;
+      
+      if (!slug) {
+         _navigateTo("", "index.html", url.search || "", url.hash || "", false);
+         return;
+      }
 
       var match = _resolveRoute(clean.replace(/\/+$/, "")) || _resolveRoute(slug);
-      e.preventDefault();
 
       if (!match) {
         _safeReplace(_origin() + _joinURL(base, slug + "/") + (url.search || "") + (url.hash || ""));
@@ -677,7 +689,6 @@
     }, true);
   }
 
-  // [FIX 4] Removed destructive path shortening and static host trailing slash issues
   function _fixNavHrefs() {
     var base  = _getBasePath();
     var nodes = [];
@@ -685,7 +696,13 @@
 
     nodes.forEach(function (a) {
       var href = a.getAttribute("href") || "";
-      if (!href || href.charAt(0) === "#" || _isExternal(href) || href.charAt(0) === "/" || _isAsset(href)) return;
+      
+      // Let the browser/native events handle these
+      if (!href || href.charAt(0) === "#" || href.charAt(0) === "/") return;
+      try {
+        var u = new URL(href, window.location.origin);
+        if (u.origin !== window.location.origin || _isAsset(u.pathname)) return;
+      } catch(e) { return; }
 
       var parts = _parsePathParts(href);
       var p = (parts.path || "").replace(/^\.\//, "");
@@ -731,11 +748,15 @@
       options = options || {};
       var s = String(slug || "");
 
-      if (_isExternal(s)) {
-        if (options.newTab && !_isInAppBrowser()) window.open(s, "_blank", "noopener,noreferrer");
-        else window.location.href = s;
-        return;
-      }
+      try {
+        var urlObj = new URL(s, window.location.origin);
+        if (urlObj.origin !== window.location.origin) {
+          if (options.newTab && !_isInAppBrowser()) window.open(s, "_blank", "noopener,noreferrer");
+          else window.location.href = s;
+          return;
+        }
+      } catch (e) {}
+
       if (options.overlay) { _openOverlay(s, options); return; }
 
       var norm  = _normalizeSlug(s);
