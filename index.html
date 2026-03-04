@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,6 +13,8 @@
 <title>ViaDecide — India's Decision Engine</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<!-- Router: loaded in <head> so VDRouter is available before any inline onclick fires -->
+<script src="router.js" onerror="console.warn('[ViaDecide] router.js not found — routing disabled')"></script>
 <style>
 /* ============================================================
    GLOBAL UX PATCH — tap highlight, focus rings, text selection
@@ -554,7 +555,7 @@ section{position:relative;z-index:10}
   </div>
   <div class="nav-right">
     <button id="install-pwa-nav">📲 Install</button>
-    <button class="nav-cta" onclick="openModal('ONDC-demo.html','🛒','ONDC Live Demo')">Try ONDC ↗</button>
+    <button class="nav-cta" onclick="window.VDRouter?VDRouter.go('ondc-demo',{overlay:true}):openModal('ONDC-demo.html','🛒','ONDC Live Demo')">Try ONDC ↗</button>
   </div>
 </nav>
 
@@ -843,12 +844,12 @@ section{position:relative;z-index:10}
       <button class="btn-g" onclick="openModal('sales-dashboard.html','📊','MSME Sales Register')" style="font-size:.95rem;padding:.95rem 2rem">📊 Sales Register</button>
     </div>
     <div class="footer-links">
-      <a onclick="openModal('contact.html','✉️','Contact')" role="button" tabindex="0">Contact</a>
-      <a onclick="openModal('privacy.html','🔒','Privacy')" role="button" tabindex="0">Privacy</a>
-      <a onclick="openModal('terms.html','📜','Terms')" role="button" tabindex="0">Terms</a>
+      <a href="/contact" onclick="if(window.VDRouter){event.preventDefault();VDRouter.go('contact',{overlay:true})}" role="button" tabindex="0">Contact</a>
+      <a href="/privacy" onclick="if(window.VDRouter){event.preventDefault();VDRouter.go('privacy',{overlay:true})}" role="button" tabindex="0">Privacy</a>
+      <a href="/terms" onclick="if(window.VDRouter){event.preventDefault();VDRouter.go('terms',{overlay:true})}" role="button" tabindex="0">Terms</a>
       <a href="https://www.youtube.com/@decide.engine" target="_blank">YouTube</a>
       <a href="https://www.instagram.com/decide_first.engine" target="_blank">Instagram</a>
-      <a onclick="openModal('founder.html','👤','Founder')" role="button" tabindex="0">About</a>
+      <a href="/founder" onclick="if(window.VDRouter){event.preventDefault();VDRouter.go('founder',{overlay:true})}" role="button" tabindex="0">About</a>
       <span>· © 2025 ViaDecide · Amazon Associates IN (decideengine-21)</span>
     </div>
   </div>
@@ -905,7 +906,6 @@ section{position:relative;z-index:10}
   </div>
 </div>
 
-<script src="router.js" onerror="console.warn('router.js not found, skipping')"></script>
 <script>
 /* ============================================================
    TAP HIGHLIGHT SAFETY PATCH
@@ -1039,22 +1039,44 @@ var threadOpen=false;
 function toggleThread(){threadOpen=!threadOpen;document.getElementById('thread-panel').classList.toggle('open',threadOpen);}
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&threadOpen)toggleThread();});
 
-/* MODAL */
+/* ============================================================
+   MODAL — prefers VDRouter.openOverlay (fetches + injects HTML,
+   no iframe sandbox limitations). Falls back to the legacy
+   iframe modal if the router is not loaded.
+   ============================================================ */
 let currentFile='';
-function openModal(file,icon,name){
-  if(/^https?:\/\//i.test(file)){window.open(file,'_blank','noopener,noreferrer');return;}
-  currentFile=file;
-  document.getElementById('m-icon').textContent=icon;
-  document.getElementById('m-name').textContent=name;
-  document.getElementById('m-tab').href=file;
-  document.getElementById('err-open-link').href=file;
+
+function openModal(file, icon, name){
+  // External URLs always open in a new tab
+  if(/^https?:\/\//i.test(file)){
+    window.open(file,'_blank','noopener,noreferrer');
+    return;
+  }
+
+  // ── VDRouter overlay path (preferred) ──────────────────────
+  if(window.VDRouter && typeof window.VDRouter.openOverlay === 'function'){
+    // Resolve the pretty slug if possible, otherwise pass raw file
+    const slug = file.replace(/\.html?$/i,'').replace(/^\.?\//,'');
+    const resolvedFile = (window.VDRouter.resolve && window.VDRouter.resolve(slug)) || file;
+    window.VDRouter.openOverlay(resolvedFile, {
+      title: (icon ? icon + '\u2009' : '') + (name || '')
+    });
+    return;
+  }
+
+  // ── Iframe fallback ─────────────────────────────────────────
+  currentFile = file;
+  document.getElementById('m-icon').textContent = icon;
+  document.getElementById('m-name').textContent = name;
+  document.getElementById('m-tab').href = file;
+  document.getElementById('err-open-link').href = file;
   document.getElementById('modal-err').classList.remove('show');
-  const frame=document.getElementById('modal-frame');
-  frame.style.display='block';
-  frame.src='';
-  setTimeout(()=>{ frame.src=file; },10);
+  const frame = document.getElementById('modal-frame');
+  frame.style.display = 'block';
+  frame.src = '';
+  setTimeout(()=>{ frame.src = file; }, 10);
   document.getElementById('modal').classList.add('open');
-  document.body.style.overflow='hidden';
+  document.body.style.overflow = 'hidden';
 }
 
 document.getElementById('modal-frame').addEventListener('load',function(){
@@ -1161,6 +1183,47 @@ if(isIOS&&!isInStandaloneMode){if(iosTriggerSection)iosTriggerSection.style.disp
 if(iosHintClose)iosHintClose.addEventListener('click',function(){if(iosHint)iosHint.classList.remove('show');try{sessionStorage.setItem('de-ios-dismissed','1');}catch(e){}});
 window.addEventListener('appinstalled',function(){dP=null;hideInstallBtns();});
 if('serviceWorker'in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});}
+
+/* ============================================================
+   ROUTER INTEGRATION
+   ============================================================ */
+(function(){
+  if(!window.VDRouter) return;
+
+  // 1. Re-bind links whenever the router finishes a route change
+  VDRouter.on('routechange', function(){
+    if(typeof VDRouter.bindLinks === 'function') VDRouter.bindLinks();
+  });
+
+  // 2. Prefetch on hover — for all clickable cards and nav chips
+  //    Extracts the file from onclick="openModal('file.html',...)" or VDRouter.go('slug')
+  function prefetchFromEl(el){
+    var oc = el.getAttribute('onclick') || '';
+    var m  = oc.match(/openModal\('([^']+)'/);
+    if(m && m[1]){
+      var slug = m[1].replace(/\.html?$/i,'').replace(/^\.?\//,'');
+      VDRouter.prefetch(slug);
+    }
+    var m2 = oc.match(/VDRouter\.go\('([^']+)'/);
+    if(m2 && m2[1]) VDRouter.prefetch(m2[1]);
+    var href = el.getAttribute('href') || '';
+    if(href && !href.startsWith('#') && !href.startsWith('http')){
+      VDRouter.prefetch(href.replace(/^\/+/,'').replace(/\.html?$/i,''));
+    }
+  }
+
+  document.querySelectorAll('.tc[onclick],.pt-card[onclick],.build-card[onclick],.nav-chip,.orb-chip[onclick]').forEach(function(el){
+    el.addEventListener('mouseenter', function(){ prefetchFromEl(el); }, {once:true, passive:true});
+    // Touch devices: prefetch on touchstart
+    el.addEventListener('touchstart', function(){ prefetchFromEl(el); }, {once:true, passive:true});
+  });
+
+  // 3. Log registered route count for debugging
+  try{
+    var rc = Object.keys(VDRouter.routes()).length;
+    console.info('[ViaDecide] VDRouter ready — ' + rc + ' routes registered');
+  }catch(e){}
+})();
 </script>
 
 <!-- POPULAR TOOLS SECTION -->
@@ -1409,12 +1472,12 @@ if('serviceWorker'in navigator){window.addEventListener('load',function(){naviga
   <div class="cat-inner">
     <div class="cat-header">
       <div class="cat-header-l"><div class="cat-num">05</div><div class="cat-info"><div class="cat-label"><div class="cat-dot"></div><span class="cat-name">Store · PrintByDD</span></div><p class="cat-desc">Custom 3D-printed products. Personalised numberplates, keychains, and gifts.</p></div></div>
-      <a class="cat-cta" href="printbydd-store/index.html">Open Store ↗</a>
+      <a class="cat-cta" href="/printbydd-store">Open Store ↗</a>
     </div>
     <div class="bento">
-      <div class="tc tc-feat tc-s4" onclick="location.href='printbydd-store/numberplate.html'" role="button" tabindex="0"><div class="tc-arr">↗</div><span class="tc-icon">🚗</span><div class="tc-name">Numberplates</div><div class="tc-desc">Custom 2D & 3D-printed vehicle numberplates with real-time 3D preview.</div><div class="tc-st live">● Live</div></div>
-      <div class="tc tc-s4" onclick="location.href='printbydd-store/keychain.html'" role="button" tabindex="0"><div class="tc-arr">↗</div><span class="tc-icon">🔑</span><div class="tc-name">NFC Keychains</div><div class="tc-desc">Personalised NFC-enabled keychains with custom engraving.</div><div class="tc-st live">● Live</div></div>
-      <div class="tc tc-s4" onclick="location.href='printbydd-store/gifts-that-mean-more.html'" role="button" tabindex="0"><div class="tc-arr">↗</div><span class="tc-icon">🎁</span><div class="tc-name">Gifts That Mean More</div><div class="tc-desc">Curated personalised gift experiences.</div><div class="tc-st live">● Live</div></div>
+      <div class="tc tc-feat tc-s4" onclick="window.VDRouter?VDRouter.go('numberplate'):location.href='printbydd-store/numberplate.html'" role="button" tabindex="0"><div class="tc-arr">↗</div><span class="tc-icon">🚗</span><div class="tc-name">Numberplates</div><div class="tc-desc">Custom 2D & 3D-printed vehicle numberplates with real-time 3D preview.</div><div class="tc-st live">● Live</div></div>
+      <div class="tc tc-s4" onclick="window.VDRouter?VDRouter.go('keychain'):location.href='printbydd-store/keychain.html'" role="button" tabindex="0"><div class="tc-arr">↗</div><span class="tc-icon">🔑</span><div class="tc-name">NFC Keychains</div><div class="tc-desc">Personalised NFC-enabled keychains with custom engraving.</div><div class="tc-st live">● Live</div></div>
+      <div class="tc tc-s4" onclick="window.VDRouter?VDRouter.go('gifts-that-mean-more'):location.href='printbydd-store/gifts-that-mean-more.html'" role="button" tabindex="0"><div class="tc-arr">↗</div><span class="tc-icon">🎁</span><div class="tc-name">Gifts That Mean More</div><div class="tc-desc">Curated personalised gift experiences.</div><div class="tc-st live">● Live</div></div>
     </div>
   </div>
 </section>
