@@ -27,28 +27,45 @@
   // ─────────────────────────────────────────────────────────
   var ROUTES = {
     // ── Popular-tool dedicated subpages ──────────────────────────────────────
-    "interview-simulator":      "interview-prep.html",    // ✅ real page exists
-    "interview-prep":           "interview-prep.html",    // ✅ real page exists
-    "restaurant-website":       "Jalaram-food-court-rajkot.html", // live restaurant example
+    "interview-simulator":      "interview-prep.html",
+    "interview-prep":           "interview-prep.html",
+    "restaurant-website":       "Jalaram-food-court-rajkot.html",
     "restaurant-builder":       "Jalaram-food-court-rajkot.html",
-    "finance-dashboard":        "finance-dashboard-msme.html",    // ✅ real page
-    "sales-dashboard":          "sales-dashboard.html",           // ✅ real page
-    "decision-tool":            "alchemist.html",                  // ✅ real page
-    "app-generator":            "app-generator.html",             // ✅ real page
+    "finance-dashboard":        "finance-dashboard-msme.html",
+    "sales-dashboard":          "sales-dashboard.html",
+    "decision-tool":            "alchemist.html",
+    "app-generator":            "app-generator.html",
 
-    // ── Additional real pages in repo ────────────────────────────────────────
-    "indiaai-mission-2025":          "indiaai-mission-2025.html",
-    "viadecide-public-beta":         "viadecide-public-beta.html",
+    // ── All real pages in repo ────────────────────────────────────────────────
+    "indiaai-mission-2025":           "indiaai-mission-2025.html",
+    "viadecide-public-beta":          "viadecide-public-beta.html",
     "multi-source-research-explained":"multi-source-research-explained.html",
-    "payment-register":              "payment-register.html",
-    "payroll-register":              "payment-register.html",
-    "jalaram-food-court":            "Jalaram-food-court-rajkot.html",
-    "restaurant-example":            "Jalaram-food-court-rajkot.html",
-    "interview-prep":                "interview-prep.html",
-    "interview-simulator":           "interview-prep.html",
-    "finance-dashboard":             "finance-dashboard-msme.html",
-    "viaguide":                      "ViaGuide.html",
-    "studyos":                       "StudyOS.html",
+    "payment-register":               "payment-register.html",
+    "payroll-register":               "payment-register.html",
+    "jalaram-food-court":             "Jalaram-food-court-rajkot.html",
+    "restaurant-example":             "Jalaram-food-court-rajkot.html",
+    "viaguide":                       "ViaGuide.html",
+    "studyos":                        "StudyOS.html",
+
+    // ── Previously missing pages (now added) ─────────────────────────────────
+    "decide-foodrajkot":              "decide-foodrajkot.html",
+    "food-rajkot":                    "decide-foodrajkot.html",
+    "viadecide-decision-matrix":      "viadecide-decision-matrix.html",
+    "decision-matrix":                "viadecide-decision-matrix.html",
+    "viadecide-opportunity-radar":    "viadecide-opportunity-radar.html",
+    "opportunity-radar":              "viadecide-opportunity-radar.html",
+    "viadecide-reality-check":        "viadecide-reality-check.html",
+    "reality-check":                  "viadecide-reality-check.html",
+    "ashokverma":                     "AshokVerma.html",
+    "ashok-verma":                    "AshokVerma.html",
+    "custom-swipe-engine-form":       "CustomSwipeEngineForm.html",
+    "customswipeengineform":          "CustomSwipeEngineForm.html",
+    "engine-activation-request":      "Engine Activation Request.html",
+    "the-decision-stack":             "The Decision Stack.html",
+    "decision-stack":                 "The Decision Stack.html",
+    // Blog post with special characters
+    "why-small-businesses-dont-need-saas": "\u201cWhy Most Small Businesses Don\u2019t Need SaaS \u2014 They Need Structure\".html",
+    "saas-structure":                      "\u201cWhy Most Small Businesses Don\u2019t Need SaaS \u2014 They Need Structure\".html",
 
     // Core tools
     alchemist:          "alchemist.html",
@@ -74,7 +91,6 @@
     terms:                   "terms.html",
     "decision-brief-guide":  "decision-brief-guide.html",
     "decide-service":        "decide-service.html",
-    "app-generator":         "app-generator.html",
     "cohort-apply-here":     "cohort-apply-here.html",
 
     // Games / sims
@@ -106,6 +122,8 @@
     ondc:           "ondc-demo",
     ViaGuide:       "viaguide",
     StudyOS:        "studyos",
+    AshokVerma:     "ashokverma",
+    "Ashok-Verma":  "ashok-verma",
     keychain:               "printbydd-store/keychain",
     numberplate:            "printbydd-store/numberplate",
     products:               "printbydd-store/products",
@@ -123,7 +141,7 @@
     { pattern: "blog/:slug",            file: "blog/:slug.html" }
   ];
 
-  var WILDCARD_FILE = null; // e.g. "404.html"
+  var WILDCARD_FILE = "404.html"; // show proper 404 for unmatched routes
   var SPA_MODE = false;
 
   // Internal state
@@ -563,9 +581,14 @@
     var clean = pathname.replace(/^\/+/, "");
     if (!clean || clean === "index.html" || clean === "index.htm") return;
     if (isAssetHref(clean)) return;
+    // Already at a real .html file — no routing needed, avoids redundant redirect loop
+    if (/\.html?$/i.test(clean)) return;
 
     var fullSlug = clean.replace(/\/+$/, "");
-    var match = resolveRoute(fullSlug) || resolveRoute(normalizeSlug(fullSlug.split("/")[0]));
+    // Try the full path first (supports param routes), then fall back to first segment only
+    var match = resolveRoute(fullSlug) ||
+                resolveRoute(normalizeSlug(fullSlug)) ||
+                resolveRoute(normalizeSlug(fullSlug.split("/")[0]));
     if (!match) return;
 
     _currentParams = match.params || {};
@@ -584,11 +607,15 @@
     try { sessionStorage.removeItem("__vd_redirect__"); } catch(e) {}
 
     var _parts   = parsePathParts(_stored);
-    var _rawSlug = (_parts.path || "/").replace(/^\//, "").split("/")[0];
+    // Use the full path (minus leading slash) to support multi-segment routes
+    var _fullPath = (_parts.path || "/").replace(/^\//, "").replace(/\/+$/, "");
+    var _rawSlug  = _fullPath || "";
 
     if (_rawSlug) {
       var _norm  = normalizeSlug(_rawSlug);
-      var _match = resolveRoute(_norm);
+      // Try full path first, then first segment as fallback
+      var _match = resolveRoute(_norm) ||
+                   resolveRoute(normalizeSlug(_rawSlug.split("/")[0]));
       if (_match) {
         _currentParams = _match.params || {};
         navigateTo(_match.file, _parts.search, _parts.hash, true);
