@@ -259,11 +259,11 @@
     var existing  = document.getElementById(overlayId);
     if (existing) existing.parentNode.removeChild(existing);
 
-    // ── resolve route so we open the canonical file, not a redirect ──
+    // ── resolve route to get the canonical file URL ──────────────────
     var resolvedUrl = url;
     try {
       var urlObj   = new URL(url, window.location.href);
-      var pathname = urlObj.pathname.replace(/^\\/+/, "");
+      var pathname = urlObj.pathname.replace(/^\/+/, "");
       var slug     = normalizeSlug(pathname);
       var match    = resolveRoute(slug);
       if (match) {
@@ -272,133 +272,295 @@
       }
     } catch(e) {}
 
-    // ── build overlay DOM ──
+    // ── check same-origin (fetch+inject) vs external (new tab only) ──
+    var isSameOrigin = false;
+    try {
+      var resolvedObj = new URL(resolvedUrl, window.location.href);
+      isSameOrigin = resolvedObj.origin === window.location.origin;
+    } catch(e) {}
+
+    // ── build overlay ─────────────────────────────────────────────────
     var overlay = document.createElement("div");
     overlay.id  = overlayId;
     overlay.style.cssText = [
       "position:fixed;top:0;left:0;width:100vw;height:100vh",
       "z-index:2100;display:flex;flex-direction:column",
-      "background:rgba(4,6,12,0.7)",
-      "backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)",
+      "background:#080a0f",
       "opacity:0;transition:opacity .3s ease"
     ].join(";");
 
-    // top bar — matches #modal-top style
+    // ── top bar ───────────────────────────────────────────────────────
     var bar = document.createElement("div");
     bar.style.cssText = [
       "display:flex;align-items:center;justify-content:space-between",
-      "padding:.75rem 1.25rem",
+      "padding:.65rem 1rem",
       "background:#0c0e15",
       "border-bottom:1px solid rgba(255,255,255,0.07)",
-      "flex-shrink:0;gap:1rem"
+      "flex-shrink:0;gap:.75rem;min-height:48px"
     ].join(";");
 
-    // left: icon + title
     var barLeft = document.createElement("div");
-    barLeft.style.cssText = "display:flex;align-items:center;gap:.55rem;min-width:0;";
-    var barIcon  = document.createElement("span");
-    barIcon.textContent = opts.icon || "↗";
-    barIcon.style.cssText = "font-size:1.1rem;flex-shrink:0";
-    var barTitle = document.createElement("span");
-    barTitle.textContent = opts.title || resolvedUrl;
-    barTitle.style.cssText = [
-      "font-family:'Outfit',sans-serif;font-size:.85rem;font-weight:600",
-      "color:#f0ede6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"
+    barLeft.style.cssText = "display:flex;align-items:center;gap:.5rem;min-width:0;flex:1";
+
+    // back chevron (closes overlay)
+    var backBtn = document.createElement("button");
+    backBtn.innerHTML = "&#8592;";
+    backBtn.setAttribute("aria-label", "Close");
+    backBtn.style.cssText = [
+      "background:none;border:none;color:#f0ede6;font-size:1.2rem",
+      "cursor:pointer;padding:4px 8px;border-radius:6px;flex-shrink:0",
+      "transition:background .15s"
     ].join(";");
-    barLeft.appendChild(barIcon);
+    backBtn.onmouseover = function(){ this.style.background = "rgba(255,255,255,0.08)"; };
+    backBtn.onmouseout  = function(){ this.style.background = "none"; };
+
+    var barTitle = document.createElement("span");
+    barTitle.textContent = opts.title || "";
+    barTitle.style.cssText = [
+      "font-family:'Outfit',sans-serif;font-size:.82rem;font-weight:600",
+      "color:#f0ede6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1"
+    ].join(";");
+
+    barLeft.appendChild(backBtn);
     barLeft.appendChild(barTitle);
 
-    // right: actions
     var barRight = document.createElement("div");
-    barRight.style.cssText = "display:flex;align-items:center;gap:.5rem;flex-shrink:0";
+    barRight.style.cssText = "display:flex;align-items:center;gap:.4rem;flex-shrink:0";
 
-    // "Open in Tab" fallback (only if iframe genuinely blocked)
-    var extBtn = document.createElement("a");
-    extBtn.href      = resolvedUrl;
-    extBtn.target    = "_blank";
-    extBtn.rel       = "noopener noreferrer";
-    extBtn.id        = "vd-inframe-ext";
+    // "Open in New Tab" — always visible, always works via window.open()
+    var extBtn = document.createElement("button");
     extBtn.textContent = "↗ New Tab";
+    extBtn.id = "vd-inframe-ext";
     extBtn.style.cssText = [
-      "font-family:'Outfit',sans-serif;font-size:.74rem;font-weight:600",
-      "padding:.38rem .85rem;border-radius:8px",
-      "border:1px solid rgba(255,255,255,0.1);color:#8a8fa8",
-      "text-decoration:none;display:none;align-items:center",
+      "font-family:'Outfit',sans-serif;font-size:.72rem;font-weight:600",
+      "padding:.36rem .8rem;border-radius:8px",
+      "border:1px solid rgba(255,255,255,0.12);color:#a0a5b8",
+      "background:transparent;cursor:pointer",
       "transition:border-color .2s,color .2s"
     ].join(";");
-
-    // close button
-    var closeBtn = document.createElement("button");
-    closeBtn.textContent = "✕ Close";
-    closeBtn.style.cssText = [
-      "font-family:'Outfit',sans-serif;font-size:.78rem;font-weight:700",
-      "padding:.42rem 1rem;background:rgba(200,147,42,0.12)",
-      "color:#e8a830;border:1px solid rgba(200,147,42,0.3)",
-      "border-radius:8px;cursor:pointer;transition:background .2s"
-    ].join(";");
-    closeBtn.onmouseover = function(){ this.style.background = "rgba(200,147,42,0.22)"; };
-    closeBtn.onmouseout  = function(){ this.style.background = "rgba(200,147,42,0.12)"; };
-    closeBtn.onclick = function() {
-      overlay.style.opacity = "0";
-      setTimeout(function(){
-        if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
-        document.body.style.overflow = "";
-      }, 300);
+    extBtn.onmouseover = function(){ this.style.color="#f0ede6"; this.style.borderColor="rgba(255,255,255,0.3)"; };
+    extBtn.onmouseout  = function(){ this.style.color="#a0a5b8"; this.style.borderColor="rgba(255,255,255,0.12)"; };
+    extBtn.onclick = function() {
+      // Close overlay first, then open tab — works on mobile too
+      _closeOverlay();
+      setTimeout(function(){ window.open(resolvedUrl, "_blank", "noopener,noreferrer"); }, 50);
     };
 
     barRight.appendChild(extBtn);
-    barRight.appendChild(closeBtn);
     bar.appendChild(barLeft);
     bar.appendChild(barRight);
 
-    // iframe wrapper
+    // ── content area ──────────────────────────────────────────────────
     var wrap = document.createElement("div");
     wrap.style.cssText = [
-      "flex:1;position:relative;overflow:hidden",
-      "background:#080a0f"
+      "flex:1;overflow-y:auto;overflow-x:hidden",
+      "background:#080a0f;position:relative",
+      "-webkit-overflow-scrolling:touch"
     ].join(";");
 
-    var iframe = document.createElement("iframe");
-    iframe.src = resolvedUrl;
-    iframe.style.cssText = "width:100%;height:100%;border:none;display:block";
-    iframe.setAttribute("allowfullscreen", "");
-    iframe.setAttribute("sandbox",
-      "allow-scripts allow-same-origin allow-forms allow-popups " +
-      "allow-popups-to-escape-sandbox allow-modals"
-    );
+    // Loading spinner
+    var loader = document.createElement("div");
+    loader.style.cssText = [
+      "position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)",
+      "display:flex;flex-direction:column;align-items:center;gap:14px"
+    ].join(";");
+    loader.innerHTML = [
+      "<div style=\"width:36px;height:36px;border:3px solid rgba(255,255,255,0.08);",
+        "border-top-color:#e8a830;border-radius:50%;",
+        "animation:vdSpin .7s linear infinite\"></div>",
+      "<span style=\"font-family:'Outfit',sans-serif;font-size:.8rem;",
+        "color:rgba(240,237,230,0.45)\">Loading…</span>"
+    ].join("");
 
-    // if iframe is blocked by X-Frame-Options, surface the "New Tab" link
-    iframe.onload = function() {
-      try {
-        var doc = iframe.contentDocument || iframe.contentWindow.document;
-        if (!doc || !doc.body || doc.body.innerHTML.trim() === "") {
-          extBtn.style.display = "inline-flex";
-        }
-      } catch(e) {
-        // cross-origin block → show fallback
-        extBtn.style.display = "inline-flex";
-      }
-    };
+    // Spin keyframes (injected once)
+    if (!document.getElementById("vd-spin-style")) {
+      var spinStyle = document.createElement("style");
+      spinStyle.id = "vd-spin-style";
+      spinStyle.textContent = "@keyframes vdSpin{to{transform:rotate(360deg)}}";
+      document.head.appendChild(spinStyle);
+    }
 
-    wrap.appendChild(iframe);
+    wrap.appendChild(loader);
     overlay.appendChild(bar);
     overlay.appendChild(wrap);
     document.body.appendChild(overlay);
     document.body.style.overflow = "hidden";
 
-    // ESC to close
-    function onKey(e) {
-      if (e.key === "Escape") {
-        closeBtn.onclick();
-        document.removeEventListener("keydown", onKey);
-      }
+    // ── close helpers ─────────────────────────────────────────────────
+    function _closeOverlay() {
+      overlay.style.opacity = "0";
+      setTimeout(function(){
+        if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+        document.body.style.overflow = "";
+        document.removeEventListener("keydown", _onKey);
+      }, 300);
     }
-    document.addEventListener("keydown", onKey);
 
-    // fade in
+    function _onKey(e) {
+      if (e.key === "Escape") _closeOverlay();
+    }
+
+    backBtn.onclick = _closeOverlay;
+    document.addEventListener("keydown", _onKey);
+
+    // fade in immediately (content loads inside)
     requestAnimationFrame(function(){
       requestAnimationFrame(function(){ overlay.style.opacity = "1"; });
     });
+
+    // ── fetch + inject for same-origin; open tab for external ─────────
+    if (!isSameOrigin) {
+      // External page — can't fetch, just open in new tab
+      loader.innerHTML = [
+        "<span style=\"font-size:2rem\">↗</span>",
+        "<span style=\"font-family:'Outfit',sans-serif;font-size:.85rem;",
+          "color:rgba(240,237,230,0.6)\">Opening in new tab…</span>"
+      ].join("");
+      setTimeout(function(){
+        window.open(resolvedUrl, "_blank", "noopener,noreferrer");
+        _closeOverlay();
+      }, 400);
+      return;
+    }
+
+    // Same-origin: fetch HTML and inject it — bypasses X-Frame-Options entirely
+    fetch(resolvedUrl, { credentials: "same-origin" })
+      .then(function(res) {
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        return res.text();
+      })
+      .then(function(html) {
+        var parser = new DOMParser();
+        var doc    = parser.parseFromString(html, "text/html");
+
+        // Update bar title from page title if not provided
+        if (!opts.title && doc.title) {
+          barTitle.textContent = doc.title.split("|")[0].split("—")[0].trim();
+        }
+
+        // ── Build an isolated content host ──
+        var host = document.createElement("div");
+        host.style.cssText = "min-height:100%;position:relative;";
+
+        // Inject <style> tags from fetched page
+        var fetchedStyles = doc.querySelectorAll("style");
+        for (var si = 0; si < fetchedStyles.length; si++) {
+          var s = document.createElement("style");
+          s.textContent = fetchedStyles[si].textContent;
+          host.appendChild(s);
+        }
+
+        // Inject <link rel="stylesheet"> from fetched page (same-origin only)
+        var fetchedLinks = doc.querySelectorAll("link[rel~='stylesheet']");
+        for (var li = 0; li < fetchedLinks.length; li++) {
+          try {
+            var linkHref = new URL(fetchedLinks[li].getAttribute("href") || "", resolvedUrl).href;
+            if (new URL(linkHref).origin === window.location.origin) {
+              var lk = document.createElement("link");
+              lk.rel  = "stylesheet";
+              lk.href = linkHref;
+              host.appendChild(lk);
+            }
+          } catch(e) {}
+        }
+
+        // Inject body content
+        var bodyEl = doc.body || doc.documentElement;
+        host.insertAdjacentHTML("beforeend", bodyEl.innerHTML);
+
+        // Remove any vd-nav injected inside fetched page (we have our own bar)
+        var injectedNav = host.querySelector("#vd-nav");
+        if (injectedNav) injectedNav.parentNode.removeChild(injectedNav);
+
+        // Remove body padding-top added by vd-nav-fix
+        host.style.paddingTop = "0";
+
+        // Replace loader with content
+        wrap.removeChild(loader);
+        wrap.appendChild(host);
+
+        // ── Intercept internal link clicks inside the overlay ──────────
+        host.addEventListener("click", function(e) {
+          var a = e.target && e.target.closest ? e.target.closest("a[href]") : null;
+          if (!a) return;
+          var href = a.getAttribute("href") || "";
+          if (!href || href.charAt(0) === "#") return;
+          if (isLikelyExternalHref(href)) return;
+          if (isAssetHref(href)) return;
+
+          try {
+            var aUrl = new URL(href, resolvedUrl);
+            if (aUrl.origin !== window.location.origin) return;
+
+            e.preventDefault();
+            e.stopPropagation();
+
+            var aPath = aUrl.pathname.replace(/^\/+/, "").replace(/\/+$/, "");
+            var aSlug = normalizeSlug(aPath);
+            var aMatch = resolveRoute(aPath) || resolveRoute(aSlug);
+            var nextUrl = aMatch
+              ? origin() + joinURL(getBasePath(), aMatch.file) + aUrl.search + aUrl.hash
+              : aUrl.href;
+
+            // Navigate overlay to new page
+            _openInframe(nextUrl, { title: "" });
+          } catch(e2) {}
+        }, true);
+
+        // ── Re-execute scripts so internal routing/interactivity works ─
+        var scripts = host.querySelectorAll("script");
+        function _execNextScript(idx) {
+          if (idx >= scripts.length) return;
+          var orig = scripts[idx];
+          var ns   = document.createElement("script");
+
+          // Copy attributes
+          for (var ai = 0; ai < orig.attributes.length; ai++) {
+            var attr = orig.attributes[ai];
+            try { ns.setAttribute(attr.name, attr.value); } catch(e) {}
+          }
+
+          // Set scope context so scripts that reference document.body work correctly
+          if (orig.src) {
+            try {
+              var srcUrl = new URL(orig.getAttribute("src") || "", resolvedUrl).href;
+              if (new URL(srcUrl).origin === window.location.origin) {
+                ns.src = srcUrl;
+                ns.onload  = function() { _execNextScript(idx + 1); };
+                ns.onerror = function() { _execNextScript(idx + 1); };
+                host.appendChild(ns);
+                return; // async, continue in callback
+              }
+            } catch(e) {}
+          } else {
+            ns.textContent = orig.textContent;
+            try { host.appendChild(ns); } catch(e) {}
+          }
+          _execNextScript(idx + 1);
+        }
+        _execNextScript(0);
+      })
+      .catch(function(err) {
+        // Fetch failed — show helpful error with direct link
+        wrap.removeChild(loader);
+        var errDiv = document.createElement("div");
+        errDiv.style.cssText = [
+          "display:flex;flex-direction:column;align-items:center;justify-content:center",
+          "min-height:60vh;gap:16px;padding:32px;text-align:center",
+          "font-family:'Outfit',sans-serif"
+        ].join(";");
+        errDiv.innerHTML = [
+          "<span style='font-size:2.5rem'>⚠️</span>",
+          "<p style='color:#f0ede6;font-size:1rem;margin:0;font-weight:600'>Could not load page</p>",
+          "<p style='color:rgba(240,237,230,0.5);font-size:.82rem;margin:0'>" + (err.message || "Network error") + "</p>",
+          "<button onclick=\"window.open('" + resolvedUrl.replace(/'/g, "\\'") + "','_blank','noopener,noreferrer')\" " +
+            "style='margin-top:8px;padding:.6rem 1.4rem;background:rgba(200,147,42,0.15);",
+            "color:#e8a830;border:1px solid rgba(200,147,42,0.35);border-radius:10px;",
+            "font-family:inherit;font-size:.82rem;font-weight:700;cursor:pointer'>",
+            "↗ Open in New Tab</button>"
+        ].join("");
+        wrap.appendChild(errDiv);
+      });
   }
 
   // ══════════════════════════════════════════════════════════
@@ -936,14 +1098,13 @@
         e.preventDefault();
         e.stopPropagation();
 
-        // read icon/title from the open modal
-        var icon  = (document.getElementById("m-icon")  || {}).textContent || "↗";
+        // read title from the open modal
         var title = (document.getElementById("m-name")  || {}).textContent || href;
 
-        // close the sheet modal first, then open inframe
+        // close the sheet modal first, then open overlay
         if (typeof closeModal === "function") closeModal();
         setTimeout(function(){
-          _openInframe(href, { icon: icon, title: title });
+          _openInframe(href, { title: title });
         }, 380);  // matches modal close transition
       });
     }
