@@ -1,21 +1,12 @@
 /**
  * ════════════════════════════════════════════════════════════════════
  * ViaDecide — Universal Router  v4.0 (BULLETPROOF EDITION)
- * https://github.com/via-decide/decide.engine
- *
- * Purpose: Convert clean URLs into actual HTML files without
- * exposing .html extensions. Works on static hosting
- * (Vercel, GitHub Pages) with zero backend needed.
  * ════════════════════════════════════════════════════════════════════
  */
 (function ViaDecideRouter() {
   "use strict";
 
-  /* ══════════════════════════════════════════════════════════════════
-     §4  ROUTES MAP   slug → file path
-     ══════════════════════════════════════════════════════════════════ */
   var ROUTES = {
-    // ── Core tools ─────────────────────────────────────────────────
     "app-generator":            "app-generator.html",
     "student-research":         "student-research.html",
     "decision-brief":           "decision-brief.html",
@@ -31,8 +22,6 @@
     "studyos":                  "StudyOS.html",
     "memory":                   "memory.html",
     "contact":                  "contact.html",
-
-    // ── Dashboards ─────────────────────────────────────────────────
     "sales-dashboard":          "sales-dashboard.html",
     "finance-dashboard":        "finance-dashboard-msme.html",
     "viadecide-decision-matrix":"viadecide-decision-matrix.html",
@@ -41,20 +30,14 @@
     "opportunity-radar":        "viadecide-opportunity-radar.html",
     "viadecide-reality-check":  "viadecide-reality-check.html",
     "reality-check":            "viadecide-reality-check.html",
-
-    // ── Interview & Research ───────────────────────────────────────
     "interview-prep":           "interview-prep.html",
     "interview-simulator":      "interview-prep.html",
-
-    // ── Restaurant / Food demos ────────────────────────────────────
     "jalaram-food-court":       "Jalaram-food-court-rajkot.html",
     "restaurant-website":       "Jalaram-food-court-rajkot.html",
     "restaurant-builder":       "Jalaram-food-court-rajkot.html",
     "restaurant-example":       "Jalaram-food-court-rajkot.html",
     "decide-foodrajkot":        "decide-foodrajkot.html",
     "food-rajkot":              "decide-foodrajkot.html",
-
-    // ── Engine & Payments ──────────────────────────────────────────
     "engine-deals":             "engine-deals.html",
     "engine-license":           "engine-license.html",
     "engine-activation-request":"Engine Activation Request.html",
@@ -64,13 +47,9 @@
     "payroll-register":         "payment-register.html",
     "custom-swipe-engine-form": "CustomSwipeEngineForm.html",
     "customswipeengineform":    "CustomSwipeEngineForm.html",
-
-    // ── People & About ─────────────────────────────────────────────
     "founder":                  "founder.html",
     "ashokverma":               "AshokVerma.html",
     "ashok-verma":              "AshokVerma.html",
-
-    // ── Main site pages ────────────────────────────────────────────
     "pricing":                  "pricing.html",
     "discounts":                "discounts.html",
     "privacy":                  "privacy.html",
@@ -79,21 +58,15 @@
     "cohort-apply-here":        "cohort-apply-here.html",
     "viadecide-public-beta":    "viadecide-public-beta.html",
     "indiaai-mission-2025":     "indiaai-mission-2025.html",
-
-    // ── Games & Simulations ──────────────────────────────
     "hexwars":                  "HexWars.html",
     "mars-rover-simulator-game":"mars-rover-simulator-game.html",
     "hivaland":                 "HivaLand.html",
-
-    // ── Store base ───────────────────────────────────────
     "printbydd-store":          "printbydd-store/index.html",
     "printbydd":                "printbydd-store/index.html",
     "keychain":                 "printbydd-store/keychain.html",
     "numberplate":              "printbydd-store/numberplate.html",
     "printbydd-products":       "printbydd-store/products.html",
     "gifts-that-mean-more":     "printbydd-store/gifts-that-mean-more.html",
-
-    // ── Blogs ──────────────────────────────────────────────────────
     "blogs":                           "Viadecide-blogs.html",
     "viadecide-blogs":                 "Viadecide-blogs.html",
     "decision-infrastructure-india":   "decision-infrastructure-india.html",
@@ -102,15 +75,10 @@
     "multi-source-research-explained": "multi-source-research-explained.html",
     "the-decision-stack":              "The Decision Stack.html",
     "decision-stack":                  "The Decision Stack.html",
-    "why-small-businesses-dont-need-saas":
-      "\u201cWhy Most Small Businesses Don\u2019t Need SaaS \u2014 They Need Structure\".html",
-    "saas-structure":
-      "\u201cWhy Most Small Businesses Don\u2019t Need SaaS \u2014 They Need Structure\".html",
+    "why-small-businesses-dont-need-saas": "“Why Most Small Businesses Don’t Need SaaS — They Need Structure”.html",
+    "saas-structure":                      "“Why Most Small Businesses Don’t Need SaaS — They Need Structure”.html",
   };
 
-  /* ══════════════════════════════════════════════════════════════════
-     §9  ALIASES   legacy slug / case variant → canonical ROUTES key
-     ══════════════════════════════════════════════════════════════════ */
   var ALIASES = {
     "SwipeOS":          "swipeos",
     "swipeos?":         "swipeos",
@@ -126,40 +94,23 @@
     "products":         "printbydd-products",
   };
 
-  /* ══════════════════════════════════════════════════════════════════
-     DYNAMIC PARAM ROUTES   /pattern/:param → file with param injected
-     ══════════════════════════════════════════════════════════════════ */
   var PARAM_ROUTES = [
     { pattern: "printbydd-store/:item", file: "printbydd-store/:item.html" },
     { pattern: "store/:item",           file: "printbydd-store/:item.html" },
     { pattern: "blog/:slug",            file: "blog/:slug.html"            },
   ];
 
-  /* ══════════════════════════════════════════════════════════════════
-     CONFIG
-     ══════════════════════════════════════════════════════════════════ */
   var WILDCARD_FILE = "404.html"; 
   var SPA_MODE      = true;  
 
-  // Internal state
   var _currentParams = {};
   var _scrollMap     = {};
   var _hooks         = { before: [], after: [] };
   var _listeners     = {};
   var _prefetchCache = {};
 
-  /* ══════════════════════════════════════════════════════════════════
-     SECTION 1 — UTILITIES
-     ══════════════════════════════════════════════════════════════════ */
-
-  function _isInAppBrowser() {
-    return /Instagram|FBAN|FBAV|FB_IAB|Line|Twitter|Snapchat/i.test(navigator.userAgent || "");
-  }
-
-  function _normalizeSlug(raw) {
-    return String(raw || "").replace(/^\/+/, "").replace(/\/+$/, "").replace(/^\.\//, "").replace(/\.html?$/i, "").trim().toLowerCase();
-  }
-
+  function _isInAppBrowser() { return /Instagram|FBAN|FBAV|FB_IAB|Line|Twitter|Snapchat/i.test(navigator.userAgent || ""); }
+  function _normalizeSlug(raw) { return String(raw || "").replace(/^\/+/, "").replace(/\/+$/, "").replace(/^\.\//, "").replace(/\.html?$/i, "").trim().toLowerCase(); }
   function _getBasePath() {
     var host = window.location.host || "";
     var path = window.location.pathname || "/";
@@ -169,37 +120,19 @@
     }
     return "/";
   }
-
-  function _origin() {
-    return window.location.protocol + "//" + window.location.host;
-  }
-
-  function _joinURL(base, file) {
-    return base.replace(/\/+$/, "/") + String(file || "").replace(/^\/+/, "");
-  }
-
+  function _origin() { return window.location.protocol + "//" + window.location.host; }
+  function _joinURL(base, file) { return base.replace(/\/+$/, "/") + String(file || "").replace(/^\/+/, ""); }
   function _parsePathParts(fullPath) {
     var m = String(fullPath || "/").match(/^([^?#]*)(\?[^#]*)?(#.*)?$/) || [];
     return { path: m[1] || "/", search: m[2] || "", hash: m[3] || "" };
   }
-
-  function _safeReplace(url) {
-    try { window.location.replace(url); } catch (e) { window.location.href = url; }
-  }
-
-  function _isAsset(href) {
-    return /\.(js|css|png|jpg|jpeg|webp|svg|ico|json|txt|xml|pdf|mp4|webm|woff2?|ttf|stl|obj|glb|gltf)$/i.test(href || "");
-  }
-
-  function _hrefToURL(href) {
-    try { return new URL(href, window.location.href); } catch (e) { return null; }
-  }
-
+  function _safeReplace(url) { try { window.location.replace(url); } catch (e) { window.location.href = url; } }
+  function _isAsset(href) { return /\.(js|css|png|jpg|jpeg|webp|svg|ico|json|txt|xml|pdf|mp4|webm|woff2?|ttf|stl|obj|glb|gltf)$/i.test(href || ""); }
+  function _hrefToURL(href) { try { return new URL(href, window.location.href); } catch (e) { return null; } }
   function _stripBasePath(pathname, basePath) {
     if (basePath !== "/" && pathname.indexOf(basePath) === 0) return pathname.slice(basePath.length - 1);
     return pathname;
   }
-
   function _levenshtein(a, b) {
     var m = a.length, n = b.length, d = [], i, j;
     for (i = 0; i <= m; i++) d[i] = [i];
@@ -209,7 +142,6 @@
         d[i][j] = a[i - 1] === b[j - 1] ? d[i - 1][j - 1] : 1 + Math.min(d[i - 1][j], d[i][j - 1], d[i - 1][j - 1]);
     return d[m][n];
   }
-
   function _suggest(slug) {
     return Object.keys(ROUTES)
       .map(function (k) { return { k: k, d: _levenshtein(slug, k) }; })
@@ -218,10 +150,6 @@
       .slice(0, 3)
       .map(function (o) { return o.k; });
   }
-
-  /* ══════════════════════════════════════════════════════════════════
-     SECTION 2 — ROUTE RESOLVER
-     ══════════════════════════════════════════════════════════════════ */
 
   function _resolveRoute(slug) {
     if (!slug) return null;
@@ -258,10 +186,6 @@
     return params;
   }
 
-  /* ══════════════════════════════════════════════════════════════════
-     SECTION 3 — NAVIGATION CORE
-     ══════════════════════════════════════════════════════════════════ */
-
   function _navigateTo(slug, filePath, search, hash, replaceState) {
     var base = _getBasePath();
     var displayUrl = _origin() + _joinURL(base, slug) + (search || "") + (hash || "");
@@ -277,12 +201,9 @@
 
   function _spaNavigate(displayUrl, filePath, search, hash, replace) {
     var from = window.location.href;
-
     _runHooks("before", { from: from, to: displayUrl, file: filePath }, function (ok) {
       if (!ok) return;
-
       _scrollMap[window.location.pathname] = window.scrollY || 0;
-
       if (replace) window.history.replaceState({ vd: true }, "", displayUrl);
       else         window.history.pushState({ vd: true }, "", displayUrl);
 
@@ -301,6 +222,7 @@
     });
   }
 
+  // 🔥 NEW BULLETPROOF FETCH & INJECT LOGIC
   function _loadPageContent(filePath, done) {
     var pageUrl = _origin() + _joinURL(_getBasePath(), filePath);
     fetch(pageUrl)
@@ -309,27 +231,45 @@
         return res.text();
       })
       .then(function (html) {
-        var doc    = new DOMParser().parseFromString(html, "text/html");
-        var newEl  = doc.querySelector("main") || doc.body;
-        var curEl  = document.querySelector("main") || document.body;
+        var doc = new DOMParser().parseFromString(html, "text/html");
         if (doc.title) document.title = doc.title;
+
+        // 1. Merge CSS from the new page into the current <head> so styling isn't lost
+        doc.querySelectorAll('link[rel="stylesheet"], style').forEach(function(node) {
+          if (node.tagName === 'LINK') {
+            var href = node.getAttribute('href');
+            if (!document.querySelector('link[href="' + href + '"]')) {
+              document.head.appendChild(node.cloneNode(true));
+            }
+          } else {
+            document.head.appendChild(node.cloneNode(true));
+          }
+        });
+
+        // 2. Strict Mount Targeting (Looks for id="vd-router-view" first)
+        var targetSelector = "#vd-router-view, main";
+        var newEl  = doc.querySelector(targetSelector) || doc.body;
+        var curEl  = document.querySelector(targetSelector) || document.body;
+
         if (newEl && curEl) { 
+          // Inject content
           curEl.innerHTML = newEl.innerHTML; 
           
-          // Re-execute scripts so the new page actually functions
+          // Re-execute scripts inside the container
           _execScripts(curEl, pageUrl, 0); 
-          
           _bindLinks(); 
         }
         if (typeof done === "function") done();
       })
-      .catch(function () { window.location.href = pageUrl; });
+      .catch(function () { 
+        // If fetch completely fails, hard reload to the file
+        window.location.href = pageUrl; 
+      });
   }
 
   /* ══════════════════════════════════════════════════════════════════
      SECTION 4 — OVERLAY 
      ══════════════════════════════════════════════════════════════════ */
-
   function _openOverlay(url, opts) {
     opts = opts || {};
     var prev = document.getElementById("vd-overlay");
@@ -460,11 +400,9 @@
           var a = e.target && e.target.closest ? e.target.closest("a[href]") : null;
           if (!a) return;
           var href = a.getAttribute("href") || "";
-          
-          // Using native URL parser to verify safety inside overlay
           try {
             var urlObj = new URL(href, resolvedUrl);
-            if (urlObj.origin !== window.location.origin) return; // External link handled by browser
+            if (urlObj.origin !== window.location.origin) return; 
             if (/^(mailto:|tel:|sms:|javascript:|data:)/i.test(urlObj.protocol)) return;
             if (_isAsset(urlObj.pathname)) return;
             if (urlObj.pathname === window.location.pathname && urlObj.hash && !urlObj.search) return;
@@ -530,7 +468,6 @@
   /* ══════════════════════════════════════════════════════════════════
      SECTION 5 — MIDDLEWARE & EVENT BUS
      ══════════════════════════════════════════════════════════════════ */
-
   function _runHooks(type, ctx, cb) {
     var hooks = _hooks[type] || [];
     var i = 0;
@@ -556,7 +493,6 @@
   /* ══════════════════════════════════════════════════════════════════
      SECTION 6 — BOOT SEQUENCE
      ══════════════════════════════════════════════════════════════════ */
-
   (function _handlePrettyURL() {
     var base     = _getBasePath();
     var pathname = _stripBasePath(window.location.pathname || "/", base);
@@ -615,7 +551,6 @@
   /* ══════════════════════════════════════════════════════════════════
      SECTION 7 — LINK BINDING
      ══════════════════════════════════════════════════════════════════ */
-
   var NAV_SELECTOR = "a[href]";
 
   function _bindLinks() {
@@ -696,8 +631,6 @@
 
     nodes.forEach(function (a) {
       var href = a.getAttribute("href") || "";
-      
-      // Let the browser/native events handle these
       if (!href || href.charAt(0) === "#" || href.charAt(0) === "/") return;
       try {
         var u = new URL(href, window.location.origin);
@@ -718,7 +651,6 @@
   /* ══════════════════════════════════════════════════════════════════
      SECTION 8 — 404 PAGE 
      ══════════════════════════════════════════════════════════════════ */
-
   function _render404(slug) {
     var hints = _suggest(String(slug));
     function _draw() {
@@ -734,7 +666,6 @@
 
       document.body.innerHTML = "<h1 style='font-size:54px;letter-spacing:-.03em;margin:0'>404</h1><p style='margin:0;color:rgba(232,237,245,.75)'>Page not found</p><p style='margin:0;color:rgba(232,237,245,.65)'>No route registered for: <strong style='color:#fff'>" + String(slug) + "</strong></p>" + hintHtml + "<a href='" + _joinURL(_getBasePath(), "") + "' style='color:#ff671f;text-decoration:none;margin-top:10px;border:1px solid #ff671f;padding:10px 18px;border-radius:50px'>← Back to Home</a>";
     }
-
     if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", _draw);
     else _draw();
   }
@@ -742,7 +673,6 @@
   /* ══════════════════════════════════════════════════════════════════
      SECTION 9 — PUBLIC API
      ══════════════════════════════════════════════════════════════════ */
-
   window.VDRouter = {
     go: function (slug, options) {
       options = options || {};
@@ -805,7 +735,6 @@
   /* ══════════════════════════════════════════════════════════════════
      SECTION 10 — MODAL TAB BUTTON WIRING
      ══════════════════════════════════════════════════════════════════ */
-
   (function _wireModalTabBtn() {
     function _attach() {
       var mTab = document.getElementById("m-tab");
