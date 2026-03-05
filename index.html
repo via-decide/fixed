@@ -9,12 +9,12 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <meta name="apple-mobile-web-app-title" content="ViaDecide"/>
 <meta name="description" content="India's Decision Engine — structured AI tools, ONDC integration, and decision frameworks built for Bharat."/>
-<link rel="manifest" href="manifest.json"/>
+<link rel="manifest" href="/manifest.json"/>
 <title>ViaDecide — India's Decision Engine</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <!-- Router: loaded in <head> so VDRouter is available before any inline onclick fires -->
-<script src="router.js" onerror="console.warn('[ViaDecide] router.js not found — routing disabled')"></script>
+<script src="/router.js" onerror="console.warn('[ViaDecide] router.js not found — routing disabled')"></script>
 <style>
 /* ============================================================
    GLOBAL UX PATCH — tap highlight, focus rings, text selection
@@ -533,12 +533,6 @@ section{position:relative;z-index:10}
 </style>
 </head>
 <body data-depth="surface">
-<div id="cur"></div>
-<div id="cur-ring"></div>
-<div class="noise"></div>
-<canvas id="bg-canvas"></canvas>
-<div id="prog"></div>
-
 <nav id="nav">
   <!-- nav-brand: added role + tabindex for keyboard/a11y since it has onclick -->
   <div class="nav-brand" onclick="window.scrollTo({top:0,behavior:'smooth'})" role="button" tabindex="0" aria-label="Go to top">
@@ -555,9 +549,17 @@ section{position:relative;z-index:10}
   </div>
   <div class="nav-right">
     <button id="install-pwa-nav">📲 Install</button>
-    <button class="nav-cta" onclick="window.VDRouter?VDRouter.go('ondc-demo',{overlay:true}):openModal('ONDC-demo.html','🛒','ONDC Live Demo')">Try ONDC ↗</button>
+    <button class="nav-cta" onclick="window.VDRouter?VDRouter.go('ondc-demo',{overlay:true}):openModal('/ONDC-demo/index.html','🛒','ONDC Live Demo')">Try ONDC ↗</button>
   </div>
 </nav>
+<main id="app">
+<div id="cur"></div>
+<div id="cur-ring"></div>
+<div class="noise"></div>
+<canvas id="bg-canvas"></canvas>
+<div id="prog"></div>
+
+
 
 <section id="hero">
   <div class="hero-kicker"><div class="live-dot"></div>🇮🇳 India's Decision Engine · Built for Bharat</div>
@@ -720,41 +722,41 @@ section{position:relative;z-index:10}
       <div class="build-search-hint"><strong>e.g.</strong> interview simulator, restaurant site, sales dashboard</div>
     </div>
     <div class="build-grid" id="build-grid">
-      <div class="build-card" data-a="teal" onclick="openModal('interview-prep.html','🎤','Interview Simulator')" role="button" tabindex="0">
+      <div class="build-card" data-a="teal" onclick="openModal('/interview-prep/index.html','🎤','Interview Simulator')" role="button" tabindex="0">
         <div class="build-card-arr">↗</div><div class="build-card-icon">🎤</div>
         <div class="build-card-title">Interview Simulator</div>
         <div class="build-card-desc">Practice job interviews in a chat simulator. Get real-time feedback and build confidence before the real thing.</div>
-        <button class="build-card-cta" onclick="event.stopPropagation();openModal('interview-prep.html','🎤','Interview Simulator')">Open Tool →</button>
+        <button class="build-card-cta" onclick="event.stopPropagation();openModal('/interview-prep/index.html','🎤','Interview Simulator')">Open Tool →</button>
       </div>
-      <div class="build-card" data-a="gold" onclick="openModal('sales-dashboard.html','📊','Sales Dashboard')" role="button" tabindex="0">
+      <div class="build-card" data-a="gold" onclick="openModal('/sales-dashboard/index.html','📊','Sales Dashboard')" role="button" tabindex="0">
         <div class="build-card-arr">↗</div><div class="build-card-icon">📊</div>
         <div class="build-card-title">Sales Dashboard</div>
         <div class="build-card-desc">Track sales and visualize performance. Upload a CSV for instant KPIs, pivot tables, and charts.</div>
-        <button class="build-card-cta" onclick="event.stopPropagation();openModal('sales-dashboard.html','📊','Sales Dashboard')">Open Tool →</button>
+        <button class="build-card-cta" onclick="event.stopPropagation();openModal('/sales-dashboard/index.html','📊','Sales Dashboard')">Open Tool →</button>
       </div>
-      <div class="build-card" data-a="orange" onclick="openModal('Jalaram-food-court-rajkot.html','🍽️','Restaurant Website')" role="button" tabindex="0">
+      <div class="build-card" data-a="orange" onclick="openModal('/Jalaram-food-court-rajkot/index.html','🍽️','Restaurant Website')" role="button" tabindex="0">
         <div class="build-card-arr">↗</div><div class="build-card-icon">🍽️</div>
         <div class="build-card-title">Restaurant Website</div>
         <div class="build-card-desc">Create a simple restaurant website with menu and contact. See a live example — Jalaram Food Court, Rajkot.</div>
-        <button class="build-card-cta" onclick="event.stopPropagation();openModal('Jalaram-food-court-rajkot.html','🍽️','Restaurant Website')">Open Tool →</button>
+        <button class="build-card-cta" onclick="event.stopPropagation();openModal('/Jalaram-food-court-rajkot/index.html','🍽️','Restaurant Website')">Open Tool →</button>
       </div>
-      <div class="build-card" data-a="green" onclick="openModal('finance-dashboard-msme.html','💰','Finance Dashboard')" role="button" tabindex="0">
+      <div class="build-card" data-a="green" onclick="openModal('/finance-dashboard-msme/index.html','💰','Finance Dashboard')" role="button" tabindex="0">
         <div class="build-card-arr">↗</div><div class="build-card-icon">💰</div>
         <div class="build-card-title">Finance Dashboard</div>
         <div class="build-card-desc">Visualize revenue, expenses and profit with interactive P&amp;L charts, budget vs actual, and FY filters.</div>
-        <button class="build-card-cta" onclick="event.stopPropagation();openModal('finance-dashboard-msme.html','💰','Finance Dashboard')">Open Tool →</button>
+        <button class="build-card-cta" onclick="event.stopPropagation();openModal('/finance-dashboard-msme/index.html','💰','Finance Dashboard')">Open Tool →</button>
       </div>
-      <div class="build-card" data-a="purple" onclick="openModal('alchemist.html','⚖️','Decision Tools')" role="button" tabindex="0">
+      <div class="build-card" data-a="purple" onclick="openModal('/alchemist/index.html','⚖️','Decision Tools')" role="button" tabindex="0">
         <div class="build-card-arr">↗</div><div class="build-card-icon">⚖️</div>
         <div class="build-card-title">Decision Tools</div>
         <div class="build-card-desc">Compare products and research choices with AI-powered structured frameworks for clear, confident decisions.</div>
-        <button class="build-card-cta" onclick="event.stopPropagation();openModal('alchemist.html','⚖️','Decision Tools')">Open Tool →</button>
+        <button class="build-card-cta" onclick="event.stopPropagation();openModal('/alchemist/index.html','⚖️','Decision Tools')">Open Tool →</button>
       </div>
-      <div class="build-card" data-a="blue" onclick="openModal('app-generator.html','🔧','Custom Web Apps')" role="button" tabindex="0">
+      <div class="build-card" data-a="blue" onclick="openModal('/app-generator/index.html','🔧','Custom Web Apps')" role="button" tabindex="0">
         <div class="build-card-arr">↗</div><div class="build-card-icon">🔧</div>
         <div class="build-card-title">Custom Web Apps</div>
         <div class="build-card-desc">Turn simple ideas into working web tools. Describe what you need and the generator builds it on the spot.</div>
-        <button class="build-card-cta" onclick="event.stopPropagation();openModal('app-generator.html','🔧','Custom Web Apps')">Open Tool →</button>
+        <button class="build-card-cta" onclick="event.stopPropagation();openModal('/app-generator/index.html','🔧','Custom Web Apps')">Open Tool →</button>
       </div>
     </div>
   </div>
@@ -768,12 +770,12 @@ section{position:relative;z-index:10}
   var bInput=document.getElementById('build-search-input'),bGo=document.getElementById('build-search-go');
   if(!bInput||!bGo)return;
   var routes=[
-    {kw:['interview','job','practice','chat','hr','career','mock'],fn:function(){openModal('interview-prep.html','🎤','Interview Simulator');}},
-    {kw:['sales','revenue','units','product','register','csv','excel','chart','kpi'],fn:function(){openModal('sales-dashboard.html','📊','Sales Dashboard');}},
-    {kw:['restaurant','food','menu','cafe','dining','hotel','contact'],fn:function(){openModal('Jalaram-food-court-rajkot.html','🍽️','Restaurant Website');}},
-    {kw:['finance','fintrack','profit','loss','pnl','expense','cashflow','budget','msme','gst','income'],fn:function(){openModal('finance-dashboard-msme.html','💰','Finance Dashboard');}},
-    {kw:['decide','decision','compare','alchemist','choice','product','research'],fn:function(){openModal('alchemist.html','⚖️','Decision Tools');}},
-    {kw:['app','build','generate','custom','web','tool','create','make','idea'],fn:function(){openModal('app-generator.html','🔧','Custom Web Apps');}},
+    {kw:['interview','job','practice','chat','hr','career','mock'],fn:function(){openModal('/interview-prep/index.html','🎤','Interview Simulator');}},
+    {kw:['sales','revenue','units','product','register','csv','excel','chart','kpi'],fn:function(){openModal('/sales-dashboard/index.html','📊','Sales Dashboard');}},
+    {kw:['restaurant','food','menu','cafe','dining','hotel','contact'],fn:function(){openModal('/Jalaram-food-court-rajkot/index.html','🍽️','Restaurant Website');}},
+    {kw:['finance','fintrack','profit','loss','pnl','expense','cashflow','budget','msme','gst','income'],fn:function(){openModal('/finance-dashboard-msme/index.html','💰','Finance Dashboard');}},
+    {kw:['decide','decision','compare','alchemist','choice','product','research'],fn:function(){openModal('/alchemist/index.html','⚖️','Decision Tools');}},
+    {kw:['app','build','generate','custom','web','tool','create','make','idea'],fn:function(){openModal('/app-generator/index.html','🔧','Custom Web Apps');}},
   ];
   function runBuildSearch(q){if(!q)return;var lq=q.toLowerCase();var best=null,top=0;routes.forEach(function(r){var sc=r.kw.reduce(function(acc,k){return acc+(lq.includes(k)?1:0);},0);if(sc>top){top=sc;best=r;}});if(best&&top>0)best.fn();else{var el=document.getElementById('cat-tools');if(el)el.scrollIntoView({behavior:'smooth'});}}
   bGo.addEventListener('click',function(){runBuildSearch(bInput.value.trim());});
@@ -838,10 +840,10 @@ section{position:relative;z-index:10}
     <h2 class="footer-h2">Start with clarity.<em>Not confusion.</em></h2>
     <p class="footer-sub">Every ViaDecide tool is free to try. No signup required for most modules.</p>
     <div class="footer-acts">
-      <button class="btn-p" onclick="openModal('ONDC-demo.html','🛒','ONDC Demo')" style="font-size:.95rem;padding:.95rem 2rem">Try ONDC Demo ↗</button>
-      <button class="btn-g" onclick="openModal('alchemist.html','✨','Alchemist')" style="font-size:.95rem;padding:.95rem 2rem">Open Alchemist</button>
-      <button class="btn-fi" onclick="openModal('finance-dashboard-msme.html','💰','FinTrack — Finance Dashboard')" style="font-size:.95rem;padding:.95rem 2rem">💰 FinTrack Dashboard</button>
-      <button class="btn-g" onclick="openModal('sales-dashboard.html','📊','MSME Sales Register')" style="font-size:.95rem;padding:.95rem 2rem">📊 Sales Register</button>
+      <button class="btn-p" onclick="openModal('/ONDC-demo/index.html','🛒','ONDC Demo')" style="font-size:.95rem;padding:.95rem 2rem">Try ONDC Demo ↗</button>
+      <button class="btn-g" onclick="openModal('/alchemist/index.html','✨','Alchemist')" style="font-size:.95rem;padding:.95rem 2rem">Open Alchemist</button>
+      <button class="btn-fi" onclick="openModal('/finance-dashboard-msme/index.html','💰','FinTrack — Finance Dashboard')" style="font-size:.95rem;padding:.95rem 2rem">💰 FinTrack Dashboard</button>
+      <button class="btn-g" onclick="openModal('/sales-dashboard/index.html','📊','MSME Sales Register')" style="font-size:.95rem;padding:.95rem 2rem">📊 Sales Register</button>
     </div>
     <div class="footer-links">
       <a href="/contact" onclick="if(window.VDRouter){event.preventDefault();VDRouter.go('contact',{overlay:true})}" role="button" tabindex="0">Contact</a>
@@ -1182,7 +1184,7 @@ if(bannerDismiss)bannerDismiss.addEventListener('click',function(){if(banner)ban
 if(isIOS&&!isInStandaloneMode){if(iosTriggerSection)iosTriggerSection.style.display='inline-flex';if(iosTriggerSection)iosTriggerSection.addEventListener('click',function(){if(iosHint)iosHint.classList.add('show');});setTimeout(function(){try{var d=sessionStorage.getItem('de-ios-dismissed');if(!d&&iosHint)iosHint.classList.add('show');}catch(e){}},4500);}
 if(iosHintClose)iosHintClose.addEventListener('click',function(){if(iosHint)iosHint.classList.remove('show');try{sessionStorage.setItem('de-ios-dismissed','1');}catch(e){}});
 window.addEventListener('appinstalled',function(){dP=null;hideInstallBtns();});
-if('serviceWorker'in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});}
+if('serviceWorker'in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register("/sw.js").catch(function(){});});}
 
 /* ============================================================
    ROUTER INTEGRATION
@@ -1196,7 +1198,7 @@ if('serviceWorker'in navigator){window.addEventListener('load',function(){naviga
   });
 
   // 2. Prefetch on hover — for all clickable cards and nav chips
-  //    Extracts the file from onclick="openModal('file.html',...)" or VDRouter.go('slug')
+  //    Extracts the file from onclick="openModal('/file.html',...)" or VDRouter.go('slug')
   function prefetchFromEl(el){
     var oc = el.getAttribute('onclick') || '';
     var m  = oc.match(/openModal\('([^']+)'/);
@@ -1311,63 +1313,63 @@ if('serviceWorker'in navigator){window.addEventListener('load',function(){naviga
     </div>
     <div class="pt-rule"></div>
     <div class="pt-grid" id="pt-grid">
-      <div class="pt-card pt-card--wip" data-c="teal" onclick="openModal('interview-prep.html','🎤','Interview Simulator')" role="button" tabindex="0">
+      <div class="pt-card pt-card--wip" data-c="teal" onclick="openModal('/interview-prep/index.html','🎤','Interview Simulator')" role="button" tabindex="0">
         <div class="pt-num">01</div>
         <div class="pt-icon-row"><div class="pt-icon">🎤</div><span class="pt-pill">Simulator</span></div>
         <div class="pt-name">Interview Simulator</div>
         <div class="pt-desc">Practice job interviews with a chat-style simulator. Get realistic questions, instant feedback, and build confidence before the real thing.</div>
         <div class="pt-footer-row">
-          <button class="pt-card-cta" onclick="event.stopPropagation();openModal('interview-prep.html','🎤','Interview Simulator')">Open Tool <span class="cta-arrow">→</span></button>
+          <button class="pt-card-cta" onclick="event.stopPropagation();openModal('/interview-prep/index.html','🎤','Interview Simulator')">Open Tool <span class="cta-arrow">→</span></button>
           <span class="pt-badge pt-badge--live">● Live</span>
         </div>
       </div>
-      <div class="pt-card" data-c="gold" onclick="openModal('sales-dashboard.html','📊','Sales Dashboard')" role="button" tabindex="0">
+      <div class="pt-card" data-c="gold" onclick="openModal('/sales-dashboard/index.html','📊','Sales Dashboard')" role="button" tabindex="0">
         <div class="pt-num">02</div>
         <div class="pt-icon-row"><div class="pt-icon">📊</div><span class="pt-pill">Dashboard</span></div>
         <div class="pt-name">Sales Dashboard</div>
         <div class="pt-desc">Track revenue and visualize business performance. Upload a CSV or enter data manually for instant KPIs, pivot tables, and trend charts.</div>
         <div class="pt-footer-row">
-          <button class="pt-card-cta" onclick="event.stopPropagation();openModal('sales-dashboard.html','📊','Sales Dashboard')">Open Tool <span class="cta-arrow">→</span></button>
+          <button class="pt-card-cta" onclick="event.stopPropagation();openModal('/sales-dashboard/index.html','📊','Sales Dashboard')">Open Tool <span class="cta-arrow">→</span></button>
           <span class="pt-badge pt-badge--live">● Live</span>
         </div>
       </div>
-      <div class="pt-card" data-c="orange" onclick="openModal('Jalaram-food-court-rajkot.html','🍽️','Restaurant Website Builder')" role="button" tabindex="0">
+      <div class="pt-card" data-c="orange" onclick="openModal('/Jalaram-food-court-rajkot/index.html','🍽️','Restaurant Website Builder')" role="button" tabindex="0">
         <div class="pt-num">03</div>
         <div class="pt-icon-row"><div class="pt-icon">🍽️</div><span class="pt-pill">Builder</span></div>
         <div class="pt-name">Restaurant Website Builder</div>
         <div class="pt-desc">Create a restaurant website with menu, gallery and WhatsApp ordering. Live example: Jalaram Food Court, Rajkot.</div>
         <div class="pt-footer-row">
-          <button class="pt-card-cta" onclick="event.stopPropagation();openModal('Jalaram-food-court-rajkot.html','🍽️','Restaurant Website Builder')">Open Tool <span class="cta-arrow">→</span></button>
+          <button class="pt-card-cta" onclick="event.stopPropagation();openModal('/Jalaram-food-court-rajkot/index.html','🍽️','Restaurant Website Builder')">Open Tool <span class="cta-arrow">→</span></button>
           <span class="pt-badge pt-badge--live">● Live</span>
         </div>
       </div>
-      <div class="pt-card" data-c="green" onclick="openModal('finance-dashboard-msme.html','💰','Finance Dashboard')" role="button" tabindex="0">
+      <div class="pt-card" data-c="green" onclick="openModal('/finance-dashboard-msme/index.html','💰','Finance Dashboard')" role="button" tabindex="0">
         <div class="pt-num">04</div>
         <div class="pt-icon-row"><div class="pt-icon">💰</div><span class="pt-pill">Finance</span></div>
         <div class="pt-name">Finance Dashboard</div>
         <div class="pt-desc">Visualize expenses, profit and cash flow with interactive P&amp;L charts, budget vs actual breakdowns, and Indian FY filters.</div>
         <div class="pt-footer-row">
-          <button class="pt-card-cta" onclick="event.stopPropagation();openModal('finance-dashboard-msme.html','💰','Finance Dashboard')">Open Tool <span class="cta-arrow">→</span></button>
+          <button class="pt-card-cta" onclick="event.stopPropagation();openModal('/finance-dashboard-msme/index.html','💰','Finance Dashboard')">Open Tool <span class="cta-arrow">→</span></button>
           <span class="pt-badge pt-badge--live">● Live</span>
         </div>
       </div>
-      <div class="pt-card" data-c="purple" onclick="openModal('alchemist.html','⚖️','Decision Tool')" role="button" tabindex="0">
+      <div class="pt-card" data-c="purple" onclick="openModal('/alchemist/index.html','⚖️','Decision Tool')" role="button" tabindex="0">
         <div class="pt-num">05</div>
         <div class="pt-icon-row"><div class="pt-icon">⚖️</div><span class="pt-pill">Decision</span></div>
         <div class="pt-name">Decision Tool</div>
         <div class="pt-desc">Compare products and evaluate buying decisions. AI-powered structured frameworks surface clarity from complex, high-stakes choices.</div>
         <div class="pt-footer-row">
-          <button class="pt-card-cta" onclick="event.stopPropagation();openModal('alchemist.html','⚖️','Decision Tool')">Open Tool <span class="cta-arrow">→</span></button>
+          <button class="pt-card-cta" onclick="event.stopPropagation();openModal('/alchemist/index.html','⚖️','Decision Tool')">Open Tool <span class="cta-arrow">→</span></button>
           <span class="pt-badge pt-badge--live">● Live</span>
         </div>
       </div>
-      <div class="pt-card" data-c="blue" onclick="openModal('app-generator.html','🔧','Custom Web App Generator')" role="button" tabindex="0">
+      <div class="pt-card" data-c="blue" onclick="openModal('/app-generator/index.html','🔧','Custom Web App Generator')" role="button" tabindex="0">
         <div class="pt-num">06</div>
         <div class="pt-icon-row"><div class="pt-icon">🔧</div><span class="pt-pill">Generator</span></div>
         <div class="pt-name">Custom Web App Generator</div>
         <div class="pt-desc">Turn simple ideas into working web tools. Describe what you need and the engine generates a fully functional app on the spot.</div>
         <div class="pt-footer-row">
-          <button class="pt-card-cta" onclick="event.stopPropagation();openModal('app-generator.html','🔧','Custom Web App Generator')">Open Tool <span class="cta-arrow">→</span></button>
+          <button class="pt-card-cta" onclick="event.stopPropagation();openModal('/app-generator/index.html','🔧','Custom Web App Generator')">Open Tool <span class="cta-arrow">→</span></button>
           <span class="pt-badge pt-badge--live">● Live</span>
         </div>
       </div>
@@ -1392,18 +1394,18 @@ if('serviceWorker'in navigator){window.addEventListener('load',function(){naviga
   <div class="cat-inner">
     <div class="cat-header">
       <div class="cat-header-l"><div class="cat-num">01</div><div class="cat-info"><div class="cat-label"><div class="cat-dot"></div><span class="cat-name">Decision Tools</span></div><p class="cat-desc">AI-powered instruments to structure your thinking, build prompts, and decide with clarity.</p></div></div>
-      <button class="cat-cta" onclick="openModal('alchemist.html','✨','Alchemist')">Try Alchemist ✨</button>
+      <button class="cat-cta" onclick="openModal('/alchemist/index.html','✨','Alchemist')">Try Alchemist ✨</button>
     </div>
     <div class="bento">
-      <div class="tc tc-feat tc-s8" onclick="openModal('alchemist.html','✨','Alchemist')" data-cat="tools" data-orbit="alchemist" data-intent="decide,compare,choose" role="button" tabindex="0"><div class="tc-arr">↗</div><div class="tc-vis">✨</div><div class="tc-name-lg">Alchemist</div><div class="tc-desc-lg">Transform fuzzy requirements into structured decisions. AI-powered clarity for complex, high-stakes choices.</div><div class="tc-st live">● Live</div></div>
-      <div class="tc tc-s4" onclick="openModal('memory.html','🧠','Memory Engine')" data-cat="tools" data-orbit="memory" data-intent="history,remember,past" role="button" tabindex="0"><div class="tc-arr">↗</div><span class="tc-icon">🧠</span><div class="tc-name">Memory Engine</div><div class="tc-desc">Persistent decision history. Past choices inform your next ones.</div><div class="tc-st live">● Live</div></div>
-      <div class="tc tc-s3" onclick="openModal('prompt-alchemy.html','⚗️','Prompt Alchemy')" data-cat="tools" data-orbit="prompt-alchemy" data-intent="prompt,ai,write,craft" role="button" tabindex="0"><div class="tc-arr">↗</div><span class="tc-icon">⚗️</span><div class="tc-name">Prompt Alchemy</div><div class="tc-desc">Craft perfect AI prompts with structured frameworks and live preview.</div><div class="tc-st live">● Live</div></div>
-      <div class="tc tc-s5" onclick="openModal('sales-dashboard.html','📊','MSME Sales Dashboard')" data-cat="tools" data-orbit="sales-dashboard" data-intent="sales,msme,register,dashboard,csv,excel,pivot,chart,revenue,india" role="button" tabindex="0" style="background:linear-gradient(145deg,rgba(200,147,42,.08),rgba(79,127,255,.05));border-color:rgba(200,147,42,.18);"><div class="tc-arr">↗</div><div class="tc-vis" style="background:linear-gradient(135deg,rgba(200,147,42,.14),rgba(34,180,160,.1))">📊<svg width="100" height="36" viewBox="0 0 100 36" fill="none" style="position:absolute;bottom:8px;right:10px;opacity:.45"><rect x="0" y="20" width="12" height="16" rx="2" fill="#4f7fff"/><rect x="15" y="10" width="12" height="26" rx="2" fill="#22d3a5"/><rect x="30" y="14" width="12" height="22" rx="2" fill="#c8932a"/><rect x="45" y="6" width="12" height="30" rx="2" fill="#4f7fff"/><rect x="60" y="16" width="12" height="20" rx="2" fill="#22d3a5"/><rect x="75" y="4" width="12" height="32" rx="2" fill="#c8932a"/></svg></div><div class="tc-name" style="font-size:1rem;font-family:'Cormorant Garamond',serif;font-weight:600">MSME Sales Dashboard</div><div class="tc-desc" style="font-size:.79rem;color:var(--tx2)">Upload CSV/XLSX for instant KPIs, pivot tables, and charts.</div><div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.75rem"><div class="tc-st msme">📈 CSV / XLSX Upload</div><div class="tc-st live">● Live</div></div></div>
-      <div class="tc tc-s4" onclick="openModal('app-generator.html','🔧','App Generator')" data-cat="tools" data-orbit="app-generator" data-intent="build,generate,app,custom" role="button" tabindex="0"><div class="tc-arr">↗</div><span class="tc-icon">🔧</span><div class="tc-name">App Generator</div><div class="tc-desc">Generate custom decision apps from requirements on the fly.</div><div class="tc-st live">● Live</div></div>
-      <div class="tc tc-s3" onclick="openModal('ViaGuide.html','📚','ViaGuide')" data-cat="tools" data-orbit="viaguide" data-intent="guide,buy,buying,recommend" role="button" tabindex="0"><div class="tc-arr">↗</div><span class="tc-icon">📚</span><div class="tc-name">ViaGuide</div><div class="tc-desc">Structured buying guides with transparent affiliate disclosures.</div><div class="tc-st live">● Live</div></div>
-      <div class="tc tc-s3" onclick="openModal('StudyOS.html','📖','StudyOS')" data-cat="tools" data-orbit="studyos" data-intent="study,research,student,learn" role="button" tabindex="0"><div class="tc-arr">↗</div><span class="tc-icon">📖</span><div class="tc-name">StudyOS</div><div class="tc-desc">Smart student research OS with structured learning pathways.</div><div class="tc-st beta">◆ Beta</div></div>
-      <div class="tc tc-s3" onclick="openModal('brief.html','📋','Decision Brief')" data-cat="tools" data-orbit="brief" data-intent="brief,summary,verdict" role="button" tabindex="0"><div class="tc-arr">↗</div><span class="tc-icon">📋</span><div class="tc-name">Decision Brief</div><div class="tc-desc">Generate a structured, shareable decision brief from your research.</div><div class="tc-st live">● Live</div></div>
-      <div class="tc tc-s3" onclick="openModal('student-research.html','🔬','Student Research')" data-cat="tools" data-orbit="student-research" data-intent="research,student,topic" role="button" tabindex="0"><div class="tc-arr">↗</div><span class="tc-icon">🔬</span><div class="tc-name">Student Research</div><div class="tc-desc">Deep research tool for academic and project work.</div><div class="tc-st live">● Live</div></div>
+      <div class="tc tc-feat tc-s8" onclick="openModal('/alchemist/index.html','✨','Alchemist')" data-cat="tools" data-orbit="alchemist" data-intent="decide,compare,choose" role="button" tabindex="0"><div class="tc-arr">↗</div><div class="tc-vis">✨</div><div class="tc-name-lg">Alchemist</div><div class="tc-desc-lg">Transform fuzzy requirements into structured decisions. AI-powered clarity for complex, high-stakes choices.</div><div class="tc-st live">● Live</div></div>
+      <div class="tc tc-s4" onclick="openModal('/memory/index.html','🧠','Memory Engine')" data-cat="tools" data-orbit="memory" data-intent="history,remember,past" role="button" tabindex="0"><div class="tc-arr">↗</div><span class="tc-icon">🧠</span><div class="tc-name">Memory Engine</div><div class="tc-desc">Persistent decision history. Past choices inform your next ones.</div><div class="tc-st live">● Live</div></div>
+      <div class="tc tc-s3" onclick="openModal('/prompt-alchemy/index.html','⚗️','Prompt Alchemy')" data-cat="tools" data-orbit="prompt-alchemy" data-intent="prompt,ai,write,craft" role="button" tabindex="0"><div class="tc-arr">↗</div><span class="tc-icon">⚗️</span><div class="tc-name">Prompt Alchemy</div><div class="tc-desc">Craft perfect AI prompts with structured frameworks and live preview.</div><div class="tc-st live">● Live</div></div>
+      <div class="tc tc-s5" onclick="openModal('/sales-dashboard/index.html','📊','MSME Sales Dashboard')" data-cat="tools" data-orbit="sales-dashboard" data-intent="sales,msme,register,dashboard,csv,excel,pivot,chart,revenue,india" role="button" tabindex="0" style="background:linear-gradient(145deg,rgba(200,147,42,.08),rgba(79,127,255,.05));border-color:rgba(200,147,42,.18);"><div class="tc-arr">↗</div><div class="tc-vis" style="background:linear-gradient(135deg,rgba(200,147,42,.14),rgba(34,180,160,.1))">📊<svg width="100" height="36" viewBox="0 0 100 36" fill="none" style="position:absolute;bottom:8px;right:10px;opacity:.45"><rect x="0" y="20" width="12" height="16" rx="2" fill="#4f7fff"/><rect x="15" y="10" width="12" height="26" rx="2" fill="#22d3a5"/><rect x="30" y="14" width="12" height="22" rx="2" fill="#c8932a"/><rect x="45" y="6" width="12" height="30" rx="2" fill="#4f7fff"/><rect x="60" y="16" width="12" height="20" rx="2" fill="#22d3a5"/><rect x="75" y="4" width="12" height="32" rx="2" fill="#c8932a"/></svg></div><div class="tc-name" style="font-size:1rem;font-family:'Cormorant Garamond',serif;font-weight:600">MSME Sales Dashboard</div><div class="tc-desc" style="font-size:.79rem;color:var(--tx2)">Upload CSV/XLSX for instant KPIs, pivot tables, and charts.</div><div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.75rem"><div class="tc-st msme">📈 CSV / XLSX Upload</div><div class="tc-st live">● Live</div></div></div>
+      <div class="tc tc-s4" onclick="openModal('/app-generator/index.html','🔧','App Generator')" data-cat="tools" data-orbit="app-generator" data-intent="build,generate,app,custom" role="button" tabindex="0"><div class="tc-arr">↗</div><span class="tc-icon">🔧</span><div class="tc-name">App Generator</div><div class="tc-desc">Generate custom decision apps from requirements on the fly.</div><div class="tc-st live">● Live</div></div>
+      <div class="tc tc-s3" onclick="openModal('/ViaGuide/index.html','📚','ViaGuide')" data-cat="tools" data-orbit="viaguide" data-intent="guide,buy,buying,recommend" role="button" tabindex="0"><div class="tc-arr">↗</div><span class="tc-icon">📚</span><div class="tc-name">ViaGuide</div><div class="tc-desc">Structured buying guides with transparent affiliate disclosures.</div><div class="tc-st live">● Live</div></div>
+      <div class="tc tc-s3" onclick="openModal('/StudyOS/index.html','📖','StudyOS')" data-cat="tools" data-orbit="studyos" data-intent="study,research,student,learn" role="button" tabindex="0"><div class="tc-arr">↗</div><span class="tc-icon">📖</span><div class="tc-name">StudyOS</div><div class="tc-desc">Smart student research OS with structured learning pathways.</div><div class="tc-st beta">◆ Beta</div></div>
+      <div class="tc tc-s3" onclick="openModal('/brief/index.html','📋','Decision Brief')" data-cat="tools" data-orbit="brief" data-intent="brief,summary,verdict" role="button" tabindex="0"><div class="tc-arr">↗</div><span class="tc-icon">📋</span><div class="tc-name">Decision Brief</div><div class="tc-desc">Generate a structured, shareable decision brief from your research.</div><div class="tc-st live">● Live</div></div>
+      <div class="tc tc-s3" onclick="openModal('/student-research/index.html','🔬','Student Research')" data-cat="tools" data-orbit="student-research" data-intent="research,student,topic" role="button" tabindex="0"><div class="tc-arr">↗</div><span class="tc-icon">🔬</span><div class="tc-name">Student Research</div><div class="tc-desc">Deep research tool for academic and project work.</div><div class="tc-st live">● Live</div></div>
       <div class="tc tc-s3" data-cat="tools" role="button" tabindex="0"><div class="tc-arr" style="opacity:.3">↗</div><span class="tc-icon">👆</span><div class="tc-name">SwipeOS</div><div class="tc-desc">Swipe-driven interface for rapid product comparison.</div><div class="tc-st wip">◌ Coming</div></div>
     </div>
   </div>
@@ -1413,7 +1415,7 @@ if('serviceWorker'in navigator){window.addEventListener('load',function(){naviga
   <div class="cat-inner">
     <div class="cat-header">
       <div class="cat-header-l"><div class="cat-num">02</div><div class="cat-info"><div class="cat-label"><div class="cat-dot"></div><span class="cat-name">Commerce & Deals</span></div><p class="cat-desc">India's open commerce layer — real prices, real sellers, real cashback.</p></div></div>
-      <button class="cat-cta" onclick="openModal('ONDC-demo.html','🛒','ONDC Live Demo')">Launch ONDC ↗</button>
+      <button class="cat-cta" onclick="openModal('/ONDC-demo/index.html','🛒','ONDC Live Demo')">Launch ONDC ↗</button>
     </div>
     <div class="ondc-strip">
       <div class="ondc-l">
@@ -1421,7 +1423,7 @@ if('serviceWorker'in navigator){window.addEventListener('load',function(){naviga
         <h3>The future of commerce<br>is <em>open.</em></h3>
         <p>A live, working ONDC integration — discover real products from real sellers on the open network.</p>
         <div class="feat-tags"><span class="feat-tag">Live Seller Data</span><span class="feat-tag">Real-time Discovery</span><span class="feat-tag">ONDC Protocol</span><span class="feat-tag">Made in India 🇮🇳</span></div>
-        <button class="btn-t" onclick="openModal('ONDC-demo.html','🛒','ONDC Demo')">Launch ONDC Demo ↗</button>
+        <button class="btn-t" onclick="openModal('/ONDC-demo/index.html','🛒','ONDC Demo')">Launch ONDC Demo ↗</button>
       </div>
       <div class="mockup">
         <div class="mockup-hd"><div class="m-dot"></div><div class="m-dot"></div><div class="m-dot"></div><div class="m-title">ONDC · Live Feed</div></div>
@@ -1431,9 +1433,9 @@ if('serviceWorker'in navigator){window.addEventListener('load',function(){naviga
       </div>
     </div>
     <div class="bento" style="margin-top:1.2rem">
-      <div class="tc tc-s4" onclick="openModal('engine-deals.html','🤝','Engine Deals')" role="button" tabindex="0"><div class="tc-arr">↗</div><span class="tc-icon">🤝</span><div class="tc-name">Engine Deals</div><div class="tc-desc">AI-scored product comparisons with live Amazon pricing.</div><div class="tc-st live">● Live</div></div>
-      <div class="tc tc-s4" onclick="openModal('discounts.html','🏷️','Discounts Hub')" role="button" tabindex="0"><div class="tc-arr">↗</div><span class="tc-icon">🏷️</span><div class="tc-name">Discounts Hub</div><div class="tc-desc">Verified cashback offers and deals curated for Indian buyers.</div><div class="tc-st live">● Live</div></div>
-      <div class="tc tc-s4" onclick="openModal('cashback-rules.html','💸','Cashback Rules')" role="button" tabindex="0"><div class="tc-arr">↗</div><span class="tc-icon">💸</span><div class="tc-name">Cashback Rules</div><div class="tc-desc">Understand exactly how to maximize bank cashback.</div><div class="tc-st live">● Live</div></div>
+      <div class="tc tc-s4" onclick="openModal('/engine-deals/index.html','🤝','Engine Deals')" role="button" tabindex="0"><div class="tc-arr">↗</div><span class="tc-icon">🤝</span><div class="tc-name">Engine Deals</div><div class="tc-desc">AI-scored product comparisons with live Amazon pricing.</div><div class="tc-st live">● Live</div></div>
+      <div class="tc tc-s4" onclick="openModal('/discounts/index.html','🏷️','Discounts Hub')" role="button" tabindex="0"><div class="tc-arr">↗</div><span class="tc-icon">🏷️</span><div class="tc-name">Discounts Hub</div><div class="tc-desc">Verified cashback offers and deals curated for Indian buyers.</div><div class="tc-st live">● Live</div></div>
+      <div class="tc tc-s4" onclick="openModal('/cashback-rules/index.html','💸','Cashback Rules')" role="button" tabindex="0"><div class="tc-arr">↗</div><span class="tc-icon">💸</span><div class="tc-name">Cashback Rules</div><div class="tc-desc">Understand exactly how to maximize bank cashback.</div><div class="tc-st live">● Live</div></div>
     </div>
   </div>
 </section>
@@ -1444,9 +1446,9 @@ if('serviceWorker'in navigator){window.addEventListener('load',function(){naviga
       <div class="cat-header-l"><div class="cat-num">03</div><div class="cat-info"><div class="cat-label"><div class="cat-dot"></div><span class="cat-name">Simulations & Games</span></div><p class="cat-desc">Decision-making at play. Strategy games and immersive sims.</p></div></div>
     </div>
     <div class="bento">
-      <div class="tc tc-s4" onclick="openModal('HexWars.html','⬡','HexWars')" role="button" tabindex="0"><div class="tc-arr">↗</div><span class="tc-icon">⬡</span><div class="tc-name">HexWars</div><div class="tc-desc">Strategic hex-grid conquest. Tactical thinking meets territory control.</div><div class="tc-st live">● Live</div></div>
-      <div class="tc tc-s4" onclick="openModal('mars-rover-simulator-game.html','🚀','Mars Rover Simulator')" role="button" tabindex="0"><div class="tc-arr">↗</div><span class="tc-icon">🚀</span><div class="tc-name">Mars Rover</div><div class="tc-desc">Navigate the Martian surface. Real physics simulation meets engineering decisions.</div><div class="tc-st live">● Live</div></div>
-      <div class="tc tc-s4" onclick="openModal('HivaLand.html','🌍','HivaLand')" role="button" tabindex="0"><div class="tc-arr">↗</div><span class="tc-icon">🌍</span><div class="tc-name">HivaLand</div><div class="tc-desc">Immersive world-building decision simulation.</div><div class="tc-st live">● Live</div></div>
+      <div class="tc tc-s4" onclick="openModal('/HexWars/index.html','⬡','HexWars')" role="button" tabindex="0"><div class="tc-arr">↗</div><span class="tc-icon">⬡</span><div class="tc-name">HexWars</div><div class="tc-desc">Strategic hex-grid conquest. Tactical thinking meets territory control.</div><div class="tc-st live">● Live</div></div>
+      <div class="tc tc-s4" onclick="openModal('/mars-rover-simulator-game/index.html','🚀','Mars Rover Simulator')" role="button" tabindex="0"><div class="tc-arr">↗</div><span class="tc-icon">🚀</span><div class="tc-name">Mars Rover</div><div class="tc-desc">Navigate the Martian surface. Real physics simulation meets engineering decisions.</div><div class="tc-st live">● Live</div></div>
+      <div class="tc tc-s4" onclick="openModal('/HivaLand/index.html','🌍','HivaLand')" role="button" tabindex="0"><div class="tc-arr">↗</div><span class="tc-icon">🌍</span><div class="tc-name">HivaLand</div><div class="tc-desc">Immersive world-building decision simulation.</div><div class="tc-st live">● Live</div></div>
     </div>
   </div>
 </section>
@@ -1455,15 +1457,15 @@ if('serviceWorker'in navigator){window.addEventListener('load',function(){naviga
   <div class="cat-inner">
     <div class="cat-header">
       <div class="cat-header-l"><div class="cat-num">04</div><div class="cat-info"><div class="cat-label"><div class="cat-dot"></div><span class="cat-name">Services</span></div><p class="cat-desc">Real-world offerings — human-assisted decision research, local services, and platform access for builders.</p></div></div>
-      <button class="cat-cta" onclick="openModal('decide-service.html','🎯','Decide.Service')">Hire Decide.Service ↗</button>
+      <button class="cat-cta" onclick="openModal('/decide-service/index.html','🎯','Decide.Service')">Hire Decide.Service ↗</button>
     </div>
     <div class="bento">
-      <div class="tc tc-feat tc-s6" onclick="openModal('decide-service.html','🎯','Decide.Service')" role="button" tabindex="0"><div class="tc-arr">↗</div><span class="tc-icon">🎯</span><div class="tc-name-lg">Decide.Service</div><div class="tc-desc-lg">White-glove decision research for complex, high-value purchases.</div><div class="tc-st svc">⊕ Paid Service</div></div>
-      <div class="tc tc-s6" onclick="openModal('decide-foodrajkot.html','🍽️','Decide Food · Rajkot')" role="button" tabindex="0"><div class="tc-arr">↗</div><span class="tc-icon">🍽️</span><div class="tc-name-lg">Decide Food · Rajkot</div><div class="tc-desc-lg">Zero-commission local food delivery in Rajkot.</div><div class="tc-st svc">⊕ Local Service</div></div>
-      <div class="tc tc-s3" onclick="openModal('engine-license.html','⚙️','Engine License')" role="button" tabindex="0"><div class="tc-arr">↗</div><span class="tc-icon">⚙️</span><div class="tc-name">Engine License</div><div class="tc-desc">White-label the ViaDecide engine for your product.</div><div class="tc-st svc">⊕ License</div></div>
-      <div class="tc tc-s3" onclick="openModal('cohort-apply-here.html','🧪','Cohort Program')" role="button" tabindex="0"><div class="tc-arr">↗</div><span class="tc-icon">🧪</span><div class="tc-name">Cohort Program</div><div class="tc-desc">Join the decide.cohort — structured program for builders.</div><div class="tc-st beta">◆ Apply Now</div></div>
-      <div class="tc tc-s3" onclick="openModal('CustomSwipeEngineForm.html','👆','Custom Swipe Engine')" role="button" tabindex="0"><div class="tc-arr">↗</div><span class="tc-icon">👆</span><div class="tc-name">Custom Swipe Engine</div><div class="tc-desc">Request a custom swipe-based comparison engine.</div><div class="tc-st svc">⊕ Custom Build</div></div>
-      <div class="tc tc-s3" onclick="openModal('pricing.html','💰','Pricing')" role="button" tabindex="0"><div class="tc-arr">↗</div><span class="tc-icon">💰</span><div class="tc-name">Pricing</div><div class="tc-desc">Transparent tiers for ViaDecide engine access.</div><div class="tc-st live">● Live</div></div>
+      <div class="tc tc-feat tc-s6" onclick="openModal('/decide-service/index.html','🎯','Decide.Service')" role="button" tabindex="0"><div class="tc-arr">↗</div><span class="tc-icon">🎯</span><div class="tc-name-lg">Decide.Service</div><div class="tc-desc-lg">White-glove decision research for complex, high-value purchases.</div><div class="tc-st svc">⊕ Paid Service</div></div>
+      <div class="tc tc-s6" onclick="openModal('/decide-foodrajkot/index.html','🍽️','Decide Food · Rajkot')" role="button" tabindex="0"><div class="tc-arr">↗</div><span class="tc-icon">🍽️</span><div class="tc-name-lg">Decide Food · Rajkot</div><div class="tc-desc-lg">Zero-commission local food delivery in Rajkot.</div><div class="tc-st svc">⊕ Local Service</div></div>
+      <div class="tc tc-s3" onclick="openModal('/engine-license/index.html','⚙️','Engine License')" role="button" tabindex="0"><div class="tc-arr">↗</div><span class="tc-icon">⚙️</span><div class="tc-name">Engine License</div><div class="tc-desc">White-label the ViaDecide engine for your product.</div><div class="tc-st svc">⊕ License</div></div>
+      <div class="tc tc-s3" onclick="openModal('/cohort-apply-here/index.html','🧪','Cohort Program')" role="button" tabindex="0"><div class="tc-arr">↗</div><span class="tc-icon">🧪</span><div class="tc-name">Cohort Program</div><div class="tc-desc">Join the decide.cohort — structured program for builders.</div><div class="tc-st beta">◆ Apply Now</div></div>
+      <div class="tc tc-s3" onclick="openModal('/CustomSwipeEngineForm/index.html','👆','Custom Swipe Engine')" role="button" tabindex="0"><div class="tc-arr">↗</div><span class="tc-icon">👆</span><div class="tc-name">Custom Swipe Engine</div><div class="tc-desc">Request a custom swipe-based comparison engine.</div><div class="tc-st svc">⊕ Custom Build</div></div>
+      <div class="tc tc-s3" onclick="openModal('/pricing/index.html','💰','Pricing')" role="button" tabindex="0"><div class="tc-arr">↗</div><span class="tc-icon">💰</span><div class="tc-name">Pricing</div><div class="tc-desc">Transparent tiers for ViaDecide engine access.</div><div class="tc-st live">● Live</div></div>
     </div>
   </div>
 </section>
@@ -1486,14 +1488,14 @@ if('serviceWorker'in navigator){window.addEventListener('load',function(){naviga
   <div class="cat-inner">
     <div class="cat-header">
       <div class="cat-header-l"><div class="cat-num">06</div><div class="cat-info"><div class="cat-label"><div class="cat-dot"></div><span class="cat-name">Blog & Content</span></div><p class="cat-desc">Long-form thinking on decisions, commerce, AI, and India's digital future.</p></div></div>
-      <button class="cat-cta" onclick="openModal('Viadecide-blogs.html','✍️','ViaDecide Blogs')">All Posts ↗</button>
+      <button class="cat-cta" onclick="openModal('/Viadecide-blogs/index.html','✍️','ViaDecide Blogs')">All Posts ↗</button>
     </div>
     <div class="bento">
-      <div class="tc tc-s6" onclick="openModal('Viadecide-blogs.html','✍️','ViaDecide Blogs')" role="button" tabindex="0"><div class="tc-arr">↗</div><span class="tc-icon">✍️</span><div class="tc-name">ViaDecide Blog</div><div class="tc-desc">Essays on decision-making, consumer tech in India, ONDC, AI tools.</div><div class="tc-st live">● Active</div></div>
-      <div class="tc tc-s3" onclick="openModal('decision-infrastructure-india.html','🏗️','Decision Infrastructure')" role="button" tabindex="0"><div class="tc-arr">↗</div><span class="tc-icon">🏗️</span><div class="tc-name">Decision Infrastructure</div><div class="tc-desc">Why India needs a decision layer.</div><div class="tc-st live">● Article</div></div>
-      <div class="tc tc-s3" onclick="openModal('ondc-for-bharat.html','🛒','ONDC for Bharat')" role="button" tabindex="0"><div class="tc-arr">↗</div><span class="tc-icon">🇮🇳</span><div class="tc-name">ONDC for Bharat</div><div class="tc-desc">A deep-dive into India's Open Network for Digital Commerce.</div><div class="tc-st live">● Article</div></div>
-      <div class="tc tc-s3" onclick="openModal('laptops-under-50000.html','💻','Laptops Under 50k')" role="button" tabindex="0"><div class="tc-arr">↗</div><span class="tc-icon">💻</span><div class="tc-name">Laptops Under ₹50k</div><div class="tc-desc">Structured buying guide with scoring matrix.</div><div class="tc-st live">● Guide</div></div>
-      <div class="tc tc-s3" onclick="openModal('founder.html','👤','Founder')" role="button" tabindex="0"><div class="tc-arr">↗</div><span class="tc-icon">👤</span><div class="tc-name">Founder</div><div class="tc-desc">The story and mission behind India's decision engine.</div><div class="tc-st live">● About</div></div>
+      <div class="tc tc-s6" onclick="openModal('/Viadecide-blogs/index.html','✍️','ViaDecide Blogs')" role="button" tabindex="0"><div class="tc-arr">↗</div><span class="tc-icon">✍️</span><div class="tc-name">ViaDecide Blog</div><div class="tc-desc">Essays on decision-making, consumer tech in India, ONDC, AI tools.</div><div class="tc-st live">● Active</div></div>
+      <div class="tc tc-s3" onclick="openModal('/decision-infrastructure-india/index.html','🏗️','Decision Infrastructure')" role="button" tabindex="0"><div class="tc-arr">↗</div><span class="tc-icon">🏗️</span><div class="tc-name">Decision Infrastructure</div><div class="tc-desc">Why India needs a decision layer.</div><div class="tc-st live">● Article</div></div>
+      <div class="tc tc-s3" onclick="openModal('/ondc-for-bharat/index.html','🛒','ONDC for Bharat')" role="button" tabindex="0"><div class="tc-arr">↗</div><span class="tc-icon">🇮🇳</span><div class="tc-name">ONDC for Bharat</div><div class="tc-desc">A deep-dive into India's Open Network for Digital Commerce.</div><div class="tc-st live">● Article</div></div>
+      <div class="tc tc-s3" onclick="openModal('/laptops-under-50000/index.html','💻','Laptops Under 50k')" role="button" tabindex="0"><div class="tc-arr">↗</div><span class="tc-icon">💻</span><div class="tc-name">Laptops Under ₹50k</div><div class="tc-desc">Structured buying guide with scoring matrix.</div><div class="tc-st live">● Guide</div></div>
+      <div class="tc tc-s3" onclick="openModal('/founder/index.html','👤','Founder')" role="button" tabindex="0"><div class="tc-arr">↗</div><span class="tc-icon">👤</span><div class="tc-name">Founder</div><div class="tc-desc">The story and mission behind India's decision engine.</div><div class="tc-st live">● About</div></div>
     </div>
   </div>
 </section>
@@ -1508,7 +1510,7 @@ if('serviceWorker'in navigator){window.addEventListener('load',function(){naviga
           <p class="cat-desc">Interactive Excel-style dashboards for Indian MSME businesses. Upload data, get instant insights.</p>
         </div>
       </div>
-      <button class="cat-cta" onclick="openModal('finance-dashboard-msme.html','💰','FinTrack — Finance Dashboard')">Open FinTrack ↗</button>
+      <button class="cat-cta" onclick="openModal('/finance-dashboard-msme/index.html','💰','FinTrack — Finance Dashboard')">Open FinTrack ↗</button>
     </div>
     <div class="finance-strip">
       <div class="fin-l">
@@ -1519,7 +1521,7 @@ if('serviceWorker'in navigator){window.addEventListener('load',function(){naviga
           <span class="fin-tag">₹ INR Native</span><span class="fin-tag">KPI Cards</span><span class="fin-tag">Pivot Tables</span>
           <span class="fin-tag">Budget vs Actual</span><span class="fin-tag">CSV Upload</span><span class="fin-tag">FY Filters 🇮🇳</span>
         </div>
-        <button class="btn-fi" onclick="openModal('finance-dashboard-msme.html','💰','FinTrack — Finance Dashboard')">Launch FinTrack Dashboard ↗</button>
+        <button class="btn-fi" onclick="openModal('/finance-dashboard-msme/index.html','💰','FinTrack — Finance Dashboard')">Launch FinTrack Dashboard ↗</button>
       </div>
       <div class="fin-mockup">
         <div class="fin-mockup-hd"><div class="m-dot"></div><div class="m-dot"></div><div class="m-dot"></div><div class="m-title" style="font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--tx3);margin-left:auto">FinTrack · India MSME</div></div>
@@ -1551,7 +1553,7 @@ if('serviceWorker'in navigator){window.addEventListener('load',function(){naviga
       </div>
     </div>
     <div class="bento" style="margin-top:1.2rem">
-      <div class="tc tc-feat tc-s8" onclick="openModal('finance-dashboard-msme.html','💰','FinTrack — Finance Dashboard')" data-cat="finance" data-orbit="fintrack" data-intent="finance,fintrack,cashflow,profit,loss,pnl,income,expense,gst,transaction,ledger,accounting,msme,india,dashboard" role="button" tabindex="0" style="background:linear-gradient(145deg,rgba(16,185,129,.1),rgba(52,211,153,.04));border-color:rgba(16,185,129,.2);">
+      <div class="tc tc-feat tc-s8" onclick="openModal('/finance-dashboard-msme/index.html','💰','FinTrack — Finance Dashboard')" data-cat="finance" data-orbit="fintrack" data-intent="finance,fintrack,cashflow,profit,loss,pnl,income,expense,gst,transaction,ledger,accounting,msme,india,dashboard" role="button" tabindex="0" style="background:linear-gradient(145deg,rgba(16,185,129,.1),rgba(52,211,153,.04));border-color:rgba(16,185,129,.2);">
         <div class="tc-arr">↗</div>
         <div class="tc-vis" style="background:linear-gradient(135deg,rgba(16,185,129,.18),rgba(200,147,42,.08))">💰
           <svg width="120" height="38" viewBox="0 0 120 38" fill="none" style="position:absolute;bottom:6px;right:8px;opacity:.5">
@@ -1566,14 +1568,14 @@ if('serviceWorker'in navigator){window.addEventListener('load',function(){naviga
           <div class="tc-st fin">💰 P&L Tracker</div><div class="tc-st fin">📊 Pivot Tables</div><div class="tc-st fin">📈 Charts</div><div class="tc-st live">● Live</div>
         </div>
       </div>
-      <div class="tc tc-s4" onclick="openModal('sales-dashboard.html','📊','MSME Sales Register')" data-cat="finance" data-orbit="sales-register" data-intent="sales,register,msme,csv,excel,pivot,chart,revenue,units,region,product,india,upload" role="button" tabindex="0" style="background:linear-gradient(145deg,rgba(200,147,42,.09),rgba(16,185,129,.05));border-color:rgba(200,147,42,.2);">
+      <div class="tc tc-s4" onclick="openModal('/sales-dashboard/index.html','📊','MSME Sales Register')" data-cat="finance" data-orbit="sales-register" data-intent="sales,register,msme,csv,excel,pivot,chart,revenue,units,region,product,india,upload" role="button" tabindex="0" style="background:linear-gradient(145deg,rgba(200,147,42,.09),rgba(16,185,129,.05));border-color:rgba(200,147,42,.2);">
         <div class="tc-arr">↗</div>
         <div class="tc-vis" style="background:linear-gradient(135deg,rgba(200,147,42,.16),rgba(16,185,129,.08))">📊</div>
         <div class="tc-name" style="font-size:1rem;font-family:'Cormorant Garamond',serif;font-weight:600">MSME Sales Register</div>
         <div class="tc-desc" style="font-size:.79rem;color:var(--tx2)">Upload sales CSV or enter manually. Instant KPIs, pivot tables, and charts.</div>
         <div style="display:flex;gap:.4rem;margin-top:.75rem"><div class="tc-st msme">📈 CSV Upload</div><div class="tc-st live">● Live</div></div>
       </div>
-      <div class="tc tc-s4" onclick="openModal('payment-register.html','👥','Payroll Register')" data-cat="finance" data-orbit="payroll-register" data-intent="payroll,salary,register,employee,pf,esi,pt,tds,deductions,payslip,india,msme" role="button" tabindex="0" style="background:linear-gradient(145deg,rgba(74,144,217,.09),rgba(34,180,160,.05));border-color:rgba(74,144,217,.2);">
+      <div class="tc tc-s4" onclick="openModal('/payment-register/index.html','👥','Payroll Register')" data-cat="finance" data-orbit="payroll-register" data-intent="payroll,salary,register,employee,pf,esi,pt,tds,deductions,payslip,india,msme" role="button" tabindex="0" style="background:linear-gradient(145deg,rgba(74,144,217,.09),rgba(34,180,160,.05));border-color:rgba(74,144,217,.2);">
         <div class="tc-arr">↗</div>
         <div class="tc-vis" style="background:linear-gradient(135deg,rgba(74,144,217,.16),rgba(34,180,160,.08))">👥</div>
         <div class="tc-name" style="font-size:1rem;font-family:'Cormorant Garamond',serif;font-weight:600">Payroll Register</div>
@@ -1595,6 +1597,7 @@ if('serviceWorker'in navigator){window.addEventListener('load',function(){naviga
     </div>
   </div>
 </section>
+</main>
 
 </body>
 </html>

@@ -1,107 +1,155 @@
 /**
- * Simple, Bulletproof Vanilla JS Router
+ * ViaDecide SPA Router
+ * Auto-generated — do not edit manually
+ * Routes: 50 pages
  */
-const AppRouter = (function() {
+const AppRouter = (function () {
     "use strict";
 
-    // 1. THE ROUTE MAP (Clean URL -> Actual File)
     const ROUTES = {
         "/": "/index.html",
-        "/viadecide-decision-matrix": "/viadecide-decision-matrix.html",
-        "/pricing": "/pricing.html",
-        "/contact": "/contact.html"
-        // Add your other routes here...
+        "/404": "/404/index.html",
+        "/AshokVerma": "/AshokVerma/index.html",
+        "/CustomSwipeEngineForm": "/CustomSwipeEngineForm/index.html",
+        "/engine-activation-request": "/engine-activation-request/index.html",
+        "/HexWars": "/HexWars/index.html",
+        "/HivaLand": "/HivaLand/index.html",
+        "/Jalaram-food-court-rajkot": "/Jalaram-food-court-rajkot/index.html",
+        "/ONDC-demo": "/ONDC-demo/index.html",
+        "/StudyOS": "/StudyOS/index.html",
+        "/SwipeOS": "/SwipeOS/index.html",
+        "/the-decision-stack": "/the-decision-stack/index.html",
+        "/ViaGuide": "/ViaGuide/index.html",
+        "/Viadecide-blogs": "/Viadecide-blogs/index.html",
+        "/alchemist": "/alchemist/index.html",
+        "/app-generator": "/app-generator/index.html",
+        "/brief": "/brief/index.html",
+        "/cashback-claim": "/cashback-claim/index.html",
+        "/cashback-rules": "/cashback-rules/index.html",
+        "/cohort-apply-here": "/cohort-apply-here/index.html",
+        "/contact": "/contact/index.html",
+        "/decide-foodrajkot": "/decide-foodrajkot/index.html",
+        "/decide-service": "/decide-service/index.html",
+        "/decision-brief-guide": "/decision-brief-guide/index.html",
+        "/decision-brief": "/decision-brief/index.html",
+        "/decision-infrastructure-india": "/decision-infrastructure-india/index.html",
+        "/discounts": "/discounts/index.html",
+        "/engine-deals": "/engine-deals/index.html",
+        "/engine-license": "/engine-license/index.html",
+        "/finance-dashboard-msme": "/finance-dashboard-msme/index.html",
+        "/founder": "/founder/index.html",
+        "/indiaai-mission-2025": "/indiaai-mission-2025/index.html",
+        "/interview-prep": "/interview-prep/index.html",
+        "/laptops-under-50000": "/laptops-under-50000/index.html",
+        "/mars-rover-simulator-game": "/mars-rover-simulator-game/index.html",
+        "/memory": "/memory/index.html",
+        "/multi-source-research-explained": "/multi-source-research-explained/index.html",
+        "/ondc-for-bharat": "/ondc-for-bharat/index.html",
+        "/payment-register": "/payment-register/index.html",
+        "/pricing": "/pricing/index.html",
+        "/privacy": "/privacy/index.html",
+        "/prompt-alchemy": "/prompt-alchemy/index.html",
+        "/sales-dashboard": "/sales-dashboard/index.html",
+        "/student-research": "/student-research/index.html",
+        "/terms": "/terms/index.html",
+        "/viadecide-decision-matrix": "/viadecide-decision-matrix/index.html",
+        "/viadecide-opportunity-radar": "/viadecide-opportunity-radar/index.html",
+        "/viadecide-public-beta": "/viadecide-public-beta/index.html",
+        "/viadecide-reality-check": "/viadecide-reality-check/index.html",
+        "/why-small-businesses-dont-need-saas": "/why-small-businesses-dont-need-saas/index.html"
     };
 
-    // 2. THE MOUNT POINT (The ID of the container we are swapping content inside)
-    const MOUNT_POINT = "#app"; 
+    const MOUNT_POINT = "#app";
 
-    // 3. INTERCEPT CLICKS
     function bindLinks() {
         document.addEventListener("click", e => {
             const a = e.target.closest("a");
             if (!a || !a.href) return;
-
             const url = new URL(a.href);
-
-            // Let the browser handle external links, emails, and assets
             if (url.origin !== window.location.origin) return;
             if (url.hash && url.pathname === window.location.pathname) return;
             if (/\.(pdf|png|jpg|jpeg|svg|css|js|glb|stl)$/i.test(url.pathname)) return;
-
-            // Stop the hard reload and route via JavaScript
-            e.preventDefault(); 
+            e.preventDefault();
             navigate(url.pathname + url.search + url.hash);
         });
     }
 
-    // 4. FETCH AND SWAP CONTENT
     async function navigate(path, isPopState = false) {
-        // Update the address bar
-        if (!isPopState) {
-            window.history.pushState({}, "", path);
-        }
-
-        // Clean the path to look up in our ROUTES map
+        if (!isPopState) window.history.pushState({}, "", path);
         let cleanPath = path.split("?")[0].replace(/\/$/, "");
         if (cleanPath === "") cleanPath = "/";
 
         const fileToFetch = ROUTES[cleanPath];
-
         if (!fileToFetch) {
-            // If route isn't in our map, force a hard redirect
             window.location.assign(path);
             return;
         }
 
+        const mount = document.querySelector(MOUNT_POINT);
+        if (mount) mount.innerHTML = '<div style="padding:3rem;text-align:center;opacity:.4;font-family:Outfit,sans-serif">Loading…</div>';
+
         try {
             const response = await fetch(fileToFetch);
-            if (!response.ok) throw new Error("File not found");
+            if (!response.ok) throw new Error("Not found: " + fileToFetch);
             const html = await response.text();
 
-            // Parse the fetched HTML
             const parser = new DOMParser();
-            const doc = parser.parseFromString(html, "text/html");
-            
-            const newContent = doc.querySelector(MOUNT_POINT);
-            const currentContainer = document.querySelector(MOUNT_POINT);
+            const doc    = parser.parseFromString(html, "text/html");
 
-            // Swap the content inside the mount point
-            if (newContent && currentContainer) {
-                currentContainer.innerHTML = newContent.innerHTML;
+            doc.querySelectorAll('link[rel="stylesheet"], style').forEach(node => {
+                if (node.tagName === "LINK") {
+                    const href = node.getAttribute("href");
+                    if (!document.querySelector(`link[href="${href}"]`)) {
+                        document.head.appendChild(node.cloneNode(true));
+                    }
+                } else {
+                    document.head.appendChild(node.cloneNode(true));
+                }
+            });
+
+            const newContent   = doc.querySelector(MOUNT_POINT);
+            const currentMount = document.querySelector(MOUNT_POINT);
+
+            if (newContent && currentMount) {
+                currentMount.innerHTML = newContent.innerHTML;
                 if (doc.title) document.title = doc.title;
-                
-                // CRITICAL: Browsers don't run scripts injected via innerHTML. This fixes that.
-                executeScripts(currentContainer);
+                window.scrollTo(0, 0);
+                executeScripts(currentMount);
             } else {
-                window.location.assign(path); // Fallback if HTML structure is wrong
+                window.location.assign(path);
             }
         } catch (err) {
-            console.error("Routing failed:", err);
-            document.querySelector(MOUNT_POINT).innerHTML = "<h2>Page not found</h2><a href='/'>Go Home</a>";
+            console.error("[VDRouter] Routing failed:", err);
+            const m = document.querySelector(MOUNT_POINT);
+            if (m) m.innerHTML = '<h2 style="padding:2rem;font-family:Outfit,sans-serif">Page not found</h2><a href="/" style="padding:0 2rem;color:#22b4a0">← Go Home</a>';
         }
     }
 
-    // 5. SCRIPT EXECUTION ENGINE
     function executeScripts(container) {
-        const scripts = container.querySelectorAll("script");
-        scripts.forEach(oldScript => {
-            const newScript = document.createElement("script");
-            Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
-            newScript.textContent = oldScript.textContent; // Copies inline code
-            oldScript.parentNode.replaceChild(newScript, oldScript);
+        container.querySelectorAll("script").forEach(old => {
+            const s = document.createElement("script");
+            Array.from(old.attributes).forEach(a => s.setAttribute(a.name, a.value));
+            s.textContent = old.textContent;
+            old.parentNode.replaceChild(s, old);
         });
     }
 
-    // 6. BOOT UP
+    /** Expose routes list for debugging */
+    function routes() { return ROUTES; }
+
     function init() {
         bindLinks();
-        // Handle the Back/Forward browser buttons
         window.addEventListener("popstate", () => navigate(window.location.pathname, true));
+        const initial = window.location.pathname;
+        const clean   = initial.replace(/\/$/, "") || "/";
+        if (clean !== "/" && ROUTES[clean]) {
+            navigate(initial, true);
+        }
     }
 
-    return { init, navigate };
+    return { init, navigate, routes };
 })();
 
-// Start the router when the page loads
+// Also expose as VDRouter for legacy compatibility
+window.VDRouter = AppRouter;
 document.addEventListener("DOMContentLoaded", () => AppRouter.init());
